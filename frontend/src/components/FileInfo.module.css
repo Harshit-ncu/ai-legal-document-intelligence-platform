@@ -1,0 +1,105 @@
+/* FileInfo.module.css */
+
+.card {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  padding: var(--space-4) var(--space-5);
+  background: var(--color-bg-elevated);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  transition: border-color var(--transition-fast);
+  animation: slideIn 0.25s ease;
+}
+
+/* Animate card appearing */
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* File type icon + extension label */
+.iconBadge {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  min-width: 44px;
+  padding: var(--space-2);
+  border-radius: var(--radius-sm);
+  flex-shrink: 0;
+}
+
+/* PDF → red tint */
+.pdf {
+  background: rgba(239, 68, 68, 0.12);
+  color: #f87171;
+}
+
+/* DOCX → blue tint */
+.docx {
+  background: rgba(59, 130, 246, 0.12);
+  color: #60a5fa;
+}
+
+.extLabel {
+  font-size: 0.625rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+/* File name and metadata */
+.info {
+  flex: 1;
+  min-width: 0; /* allows text truncation to work inside flex */
+}
+
+.name {
+  font-size: 0.9375rem;
+  font-weight: 500;
+  color: var(--color-text-primary);
+  /* Truncate long filenames with "..." */
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.meta {
+  margin-top: 2px;
+  font-size: 0.8125rem;
+  color: var(--color-text-secondary);
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.dot {
+  color: var(--color-text-muted);
+}
+
+/* Remove button */
+.removeBtn {
+  background: transparent;
+  border: none;
+  color: var(--color-text-muted);
+  cursor: pointer;
+  padding: var(--space-2);
+  border-radius: var(--radius-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all var(--transition-fast);
+  flex-shrink: 0;
+}
+
+.removeBtn:hover {
+  background: var(--color-error-bg);
+  color: var(--color-error);
+}

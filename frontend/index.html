@@ -2,12 +2,17 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>frontend</title>
+    <title>Legal AI — Document Analyzer</title>
+    <meta name="description" content="Upload and analyze legal documents with AI. Extract clauses, summarize contracts, and flag risks instantly." />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
   </head>
   <body>
-    <div id="app"></div>
-    <script type="module" src="/src/main.ts"></script>
+    <!-- React mounts inside this div -->
+    <div id="root"></div>
+    <!-- Entry point is now main.jsx (React), not main.ts -->
+    <script type="module" src="/src/main.jsx"></script>
   </body>
 </html>

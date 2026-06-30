@@ -1,0 +1,282 @@
+/* UploadPage.module.css */
+
+/* ── Page Layout ───────────────────────────────────────── */
+.page {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: var(--space-10) var(--space-6) var(--space-12);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-8);
+}
+
+/* ── Header ────────────────────────────────────────────── */
+.header {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.logo {
+  font-size: 3rem;
+  line-height: 1;
+  /* subtle drop shadow to make emoji pop on dark bg */
+  filter: drop-shadow(0 4px 12px rgba(99, 102, 241, 0.3));
+}
+
+.title {
+  font-size: 2rem;
+  font-weight: 700;
+  letter-spacing: -0.025em;
+  /* Gradient text — indigo to violet */
+  background: linear-gradient(135deg, #f1f5f9 0%, var(--color-accent-light) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.subtitle {
+  font-size: 1rem;
+  color: var(--color-text-secondary);
+  max-width: 480px;
+  line-height: 1.7;
+}
+
+/* ── Upload Card ───────────────────────────────────────── */
+.card {
+  background: var(--color-bg-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-xl);
+  padding: var(--space-8);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+  box-shadow:
+    0 1px 0 0 rgba(255, 255, 255, 0.03) inset,
+    0 20px 60px -20px rgba(0, 0, 0, 0.5);
+}
+
+/* ── Upload Button ─────────────────────────────────────── */
+.uploadBtn {
+  width: 100%;
+  padding: var(--space-4) var(--space-6);
+  background: linear-gradient(135deg, var(--color-accent) 0%, #7c3aed 100%);
+  color: #fff;
+  border: none;
+  border-radius: var(--radius-md);
+  font-family: var(--font-sans);
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  transition: all var(--transition-base);
+  letter-spacing: 0.01em;
+  box-shadow: 0 4px 16px rgba(99, 102, 241, 0.3);
+}
+
+.uploadBtn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(99, 102, 241, 0.45);
+}
+
+.uploadBtn:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 8px rgba(99, 102, 241, 0.3);
+}
+
+/* ── Success Panel ─────────────────────────────────────── */
+.successPanel {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-4);
+  text-align: center;
+  animation: fadeUp 0.35s ease;
+}
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.successIcon {
+  font-size: 3rem;
+}
+
+.successTitle {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--color-success);
+}
+
+/* Definition list grid for file metadata */
+.resultGrid {
+  width: 100%;
+  background: var(--color-bg-elevated);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+}
+
+.resultRow {
+  display: grid;
+  grid-template-columns: 130px 1fr;
+  padding: var(--space-3) var(--space-5);
+  border-bottom: 1px solid var(--color-border);
+  text-align: left;
+  gap: var(--space-4);
+}
+
+.resultRow:last-child {
+  border-bottom: none;
+}
+
+.resultRow dt {
+  font-size: 0.8125rem;
+  color: var(--color-text-muted);
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+}
+
+.resultRow dd {
+  font-size: 0.875rem;
+  color: var(--color-text-primary);
+  word-break: break-all;
+}
+
+/* Monospace for technical values (filename, etc.) */
+.mono {
+  font-family: 'SF Mono', 'Fira Code', ui-monospace, monospace;
+  font-size: 0.8125rem !important;
+  color: var(--color-accent-light) !important;
+}
+
+.nextHint {
+  font-size: 0.875rem;
+  color: var(--color-text-secondary);
+  background: rgba(99, 102, 241, 0.08);
+  border: 1px solid rgba(99, 102, 241, 0.2);
+  border-radius: var(--radius-sm);
+  padding: var(--space-3) var(--space-5);
+  width: 100%;
+  text-align: center;
+}
+
+/* ── Error Panel ───────────────────────────────────────── */
+.errorPanel {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-4);
+  padding: var(--space-6);
+  background: var(--color-error-bg);
+  border: 1px solid rgba(239, 68, 68, 0.2);
+  border-radius: var(--radius-md);
+  animation: fadeUp 0.3s ease;
+}
+
+.errorIcon {
+  font-size: 2.5rem;
+}
+
+.errorMessage {
+  font-size: 0.9375rem;
+  color: #fca5a5; /* light red — readable on dark bg */
+  text-align: center;
+  font-weight: 500;
+}
+
+/* ── Shared Reset Button ───────────────────────────────── */
+.resetBtn {
+  padding: var(--space-3) var(--space-6);
+  background: var(--color-bg-elevated);
+  color: var(--color-text-primary);
+  border: 1px solid var(--color-border-hover);
+  border-radius: var(--radius-sm);
+  font-family: var(--font-sans);
+  font-size: 0.9375rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.resetBtn:hover {
+  background: var(--color-bg-base);
+  border-color: var(--color-accent);
+  color: var(--color-accent-light);
+}
+
+/* ── Feature Cards ─────────────────────────────────────── */
+.features {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--space-4);
+}
+
+@media (max-width: 600px) {
+  .features {
+    grid-template-columns: 1fr;
+  }
+
+  .title {
+    font-size: 1.5rem;
+  }
+
+  .card {
+    padding: var(--space-5);
+  }
+}
+
+.featureCard {
+  background: var(--color-bg-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: var(--space-5);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  transition: border-color var(--transition-fast), transform var(--transition-fast);
+}
+
+.featureCard:hover {
+  border-color: var(--color-border-hover);
+  transform: translateY(-2px);
+}
+
+.featureIcon {
+  font-size: 1.5rem;
+}
+
+.featureTitle {
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: var(--color-text-primary);
+}
+
+.featureDesc {
+  font-size: 0.8125rem;
+  color: var(--color-text-secondary);
+  line-height: 1.55;
+  flex: 1;
+}
+
+.comingSoon {
+  display: inline-block;
+  margin-top: var(--space-2);
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+  background: var(--color-bg-elevated);
+  border: 1px solid var(--color-border);
+  border-radius: 999px;
+  padding: 2px var(--space-3);
+  width: fit-content;
+}
