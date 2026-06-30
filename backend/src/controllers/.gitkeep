@@ -1,0 +1,2 @@
+// Controllers handle the business logic for each route.
+// They receive req/res from the router and call services.

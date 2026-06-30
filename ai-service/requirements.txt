@@ -1,0 +1,19 @@
+# requirements.txt
+# Pin major versions for reproducibility.
+# Run: pip install -r requirements.txt
+
+# ── Web Framework ──────────────────────────────────────────
+fastapi==0.115.5          # Modern async Python API framework
+uvicorn[standard]==0.32.1 # ASGI server to run FastAPI
+
+# ── File Parsing ───────────────────────────────────────────
+python-multipart==0.0.12  # Required for FastAPI file uploads
+PyPDF2==3.0.1             # Parse and extract text from PDFs
+python-docx==1.1.2        # Parse .docx (Word) files
+
+# ── AI / NLP ───────────────────────────────────────────────
+openai==1.54.4            # OpenAI SDK (GPT-4 for summarization)
+# spacy==3.7.6            # Uncomment when we add NLP in Module 3
+
+# ── Utilities ─────────────────────────────────────────────
+python-dotenv==1.0.1      # Load .env variables

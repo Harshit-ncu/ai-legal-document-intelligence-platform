@@ -1,0 +1,2 @@
+// Middleware functions sit between the request and the route handler.
+// Examples: authentication check, file upload validation, error handler.

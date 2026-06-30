@@ -1,0 +1,2 @@
+// Utility/helper functions shared across the backend.
+// Examples: formatDate, sanitizeFilename, paginate.

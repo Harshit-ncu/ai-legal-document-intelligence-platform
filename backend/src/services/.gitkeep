@@ -1,0 +1,2 @@
+// Services contain pure business logic — no req/res objects here.
+// This makes the code testable and reusable.
