@@ -10,9 +10,12 @@
 export const ALLOWED_TYPES = [
   'application/pdf',
   'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+  'text/plain',
+  'image/jpeg',
+  'image/png'
 ];
 
-export const ALLOWED_EXTENSIONS = ['.pdf', '.docx'];
+export const ALLOWED_EXTENSIONS = ['.pdf', '.docx', '.txt', '.jpg', '.jpeg', '.png'];
 
 // 5 MB in bytes
 export const MAX_SIZE_BYTES = 5 * 1024 * 1024;
@@ -29,7 +32,7 @@ export const validateFile = (file) => {
 
   // Check file type by MIME type
   if (!ALLOWED_TYPES.includes(file.type)) {
-    return 'Only PDF and DOCX files are allowed.';
+    return 'Only PDF, DOCX, TXT, and Image files are allowed.';
   }
 
   // Check file size

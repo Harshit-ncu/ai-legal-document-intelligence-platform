@@ -106,16 +106,36 @@ const UploadPage = () => {
                 <dd>{result.originalName}</dd>
               </div>
               <div className={styles.resultRow}>
-                <dt>Saved As</dt>
-                <dd className={styles.mono}>{result.filename}</dd>
+                <dt>Document Type</dt>
+                <dd className={styles.mono}>{result.documentType?.toUpperCase() || 'UNKNOWN'}</dd>
               </div>
               <div className={styles.resultRow}>
-                <dt>Size</dt>
-                <dd>{formatFileSize(result.size)}</dd>
+                <dt>Classification</dt>
+                <dd>{result.classification} ({(result.classificationConfidence * 100).toFixed(0)}%)</dd>
               </div>
               <div className={styles.resultRow}>
-                <dt>Uploaded At</dt>
-                <dd>{new Date(result.uploadedAt).toLocaleString()}</dd>
+                <dt>Language</dt>
+                <dd>{result.language}</dd>
+              </div>
+              <div className={styles.resultRow}>
+                <dt>Word Count</dt>
+                <dd>{result.wordCount?.toLocaleString()}</dd>
+              </div>
+              <div className={styles.resultRow}>
+                <dt>Character Count</dt>
+                <dd>{result.characterCount?.toLocaleString()}</dd>
+              </div>
+              <div className={styles.resultRow}>
+                <dt>Sentence Count</dt>
+                <dd>{result.sentenceCount?.toLocaleString()}</dd>
+              </div>
+              <div className={styles.resultRow}>
+                <dt>Reading Time</dt>
+                <dd>~{result.estimatedReadingTimeMinutes} min</dd>
+              </div>
+              <div className={styles.resultRow}>
+                <dt>Processing Time</dt>
+                <dd>{result.processingTimeMs} ms</dd>
               </div>
             </dl>
 

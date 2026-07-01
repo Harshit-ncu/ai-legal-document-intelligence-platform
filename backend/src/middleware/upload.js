@@ -47,6 +47,9 @@ const fileFilter = (_req, file, cb) => {
     'application/pdf',
     // .docx MIME type (the official IANA type for Word 2007+)
     'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+    'text/plain',
+    'image/jpeg',
+    'image/png'
   ];
 
   if (ALLOWED_MIME_TYPES.includes(file.mimetype)) {

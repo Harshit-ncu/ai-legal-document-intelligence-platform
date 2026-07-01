@@ -104,11 +104,11 @@ const DropZone = ({ onFileSelect, disabled }) => {
       aria-label="Upload a legal document by dragging and dropping or clicking to browse"
       aria-disabled={disabled}
     >
-      {/* Hidden file input — only PDF and DOCX */}
+      {/* Hidden file input — dynamic accept types */}
       <input
         ref={inputRef}
         type="file"
-        accept=".pdf,.docx"
+        accept={ALLOWED_EXTENSIONS.join(',')}
         onChange={handleInputChange}
         className={styles.hiddenInput}
         // aria-hidden because it's controlled by the visible zone div
