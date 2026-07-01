@@ -7,24 +7,31 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
+from app.routers import extraction  # Module 2A: text extraction
+
 app = FastAPI(
     title="Legal AI Service",
     description="Analyzes legal documents using NLP and AI",
     version="1.0.0",
 )
 
-# Allow requests from the Node.js backend
+# Allow requests from the Node.js backend (and direct browser calls
+# during development)
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3001"],
+    allow_origins=["http://localhost:3001", "http://localhost:5173"],
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
-# ── Routers will be included here as we build each module ──
-# Example:
-#   from app.routers import analyze
-#   app.include_router(analyze.router, prefix="/analyze")
+# ── Mount routers ─────────────────────────────────────────
+# extraction.router handles:  POST /extract/text
+app.include_router(extraction.router)
+
+# Future modules will be added here:
+#   app.include_router(summarize.router)   # Module 3
+#   app.include_router(clauses.router)     # Module 4
+
 
 @app.get("/health")
 def health_check():

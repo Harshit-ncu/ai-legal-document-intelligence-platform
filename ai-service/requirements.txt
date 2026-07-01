@@ -8,12 +8,16 @@ uvicorn[standard]==0.32.1 # ASGI server to run FastAPI
 
 # ── File Parsing ───────────────────────────────────────────
 python-multipart==0.0.12  # Required for FastAPI file uploads
-PyPDF2==3.0.1             # Parse and extract text from PDFs
+pymupdf==1.24.14          # PDF extraction (replaces unmaintained PyPDF2)
 python-docx==1.1.2        # Parse .docx (Word) files
+# TXT files use Python's built-in open() — no extra package needed
 
 # ── AI / NLP ───────────────────────────────────────────────
-openai==1.54.4            # OpenAI SDK (GPT-4 for summarization)
+openai==1.54.4            # OpenAI SDK (GPT-4 for summarization — Module 3)
 # spacy==3.7.6            # Uncomment when we add NLP in Module 3
+
+# ── Testing ────────────────────────────────────────────────
+pytest==8.3.4             # Unit test runner
 
 # ── Utilities ─────────────────────────────────────────────
 python-dotenv==1.0.1      # Load .env variables
