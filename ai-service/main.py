@@ -9,6 +9,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from app.routers import extraction  # Module 2A: text extraction
 from app.routers import ocr          # Module 2B: OCR + scanned docs
+from app.routers import intelligence # Feature 4: Document Intelligence
 
 app = FastAPI(
     title="Legal AI Service",
@@ -31,6 +32,9 @@ app.include_router(extraction.router)
 
 # ocr.router handles:         POST /ocr/extract
 app.include_router(ocr.router)
+
+# intelligence.router handles: POST /intelligence/analyze
+app.include_router(intelligence.router)
 
 # Future modules will be added here:
 #   app.include_router(summarize.router)   # Module 3
