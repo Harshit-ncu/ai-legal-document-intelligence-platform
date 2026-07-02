@@ -3,9 +3,10 @@
 # FastAPI router for all Gemini AI endpoints.
 #
 # ENDPOINTS:
-#   POST /gemini/summarize   → AI-powered legal document summarization.
-#   POST /gemini/test        → [DEV] Send a test prompt, get a response.
-#   GET  /gemini/health      → Check Gemini connectivity (no credentials exposed).
+#   POST /gemini/summarize     → AI-powered legal document summarization.
+#   POST /gemini/risk-analysis → AI-powered legal risk and compliance analysis.
+#   POST /gemini/test          → [DEV] Send a test prompt, get a response.
+#   GET  /gemini/health        → Check Gemini connectivity (no credentials exposed).
 # ─────────────────────────────────────────────────────────
 
 import logging
@@ -16,6 +17,8 @@ from pydantic import BaseModel, Field
 from app.services.gemini_service import generate_text, gemini_health_check
 from app.services.summarization_service import summarize_document
 from app.models.summarization import SummarizeRequest, SummarizeResponse
+from app.services.risk_analysis_service import analyze_document_risk
+from app.models.risk_analysis import RiskAnalysisRequest, RiskAnalysisResponse
 
 router = APIRouter(
     prefix="/gemini",
@@ -180,4 +183,51 @@ async def summarize(request: SummarizeRequest):
     except RuntimeError as exc:
         # Gemini API errors: rate limit, bad key, server error, etc.
         logger.error("POST /gemini/summarize — Gemini error: %s", exc)
+        raise _map_runtime_error_to_http(exc)
+
+
+# ── Risk Analysis Endpoint ─────────────────────────────────
+
+@router.post(
+    "/risk-analysis",
+    response_model=RiskAnalysisResponse,
+    summary="Analyze a legal document for risks using Gemini AI",
+    description=(
+        "Accepts extracted document text and returns a structured AI risk analysis including "
+        "overall risk score, specific risk factors, missing clauses, and obligations."
+    ),
+)
+async def risk_analysis(request: RiskAnalysisRequest):
+    """
+    POST /gemini/risk-analysis
+
+    Input:  { "text": "...", "documentType": "NDA" }
+    Output: Structured JSON risk analysis from Gemini 2.5 Pro.
+    """
+    logger.info(
+        "POST /gemini/risk-analysis — request received. document_type=%s text_length=%d",
+        request.documentType,
+        len(request.text),
+    )
+
+    try:
+        result = analyze_document_risk(
+            text=request.text,
+            document_type=request.documentType,
+        )
+        logger.info(
+            "POST /gemini/risk-analysis — completed. duration_ms=%d",
+            result["processingTimeMs"],
+        )
+        return RiskAnalysisResponse(success=True, **result)
+
+    except ValueError as exc:
+        logger.warning("POST /gemini/risk-analysis — validation error: %s", exc)
+        raise HTTPException(
+            status_code=422,
+            detail={"success": False, "error": str(exc)},
+        )
+
+    except RuntimeError as exc:
+        logger.error("POST /gemini/risk-analysis — Gemini error: %s", exc)
         raise _map_runtime_error_to_http(exc)
