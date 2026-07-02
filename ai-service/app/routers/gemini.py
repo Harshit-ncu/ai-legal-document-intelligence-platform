@@ -1,14 +1,11 @@
 # app/routers/gemini.py
 # ─────────────────────────────────────────────────────────
-# FastAPI router for Gemini SDK infrastructure endpoints.
+# FastAPI router for all Gemini AI endpoints.
 #
 # ENDPOINTS:
-#   POST /gemini/test        → Send a test prompt, get a response.
+#   POST /gemini/summarize   → AI-powered legal document summarization.
+#   POST /gemini/test        → [DEV] Send a test prompt, get a response.
 #   GET  /gemini/health      → Check Gemini connectivity (no credentials exposed).
-#
-# NOTE: /gemini/test is a DEVELOPMENT/VERIFICATION endpoint only.
-#       It will be replaced by purpose-built endpoints (summarize, etc.)
-#       as individual AI features are implemented in later modules.
 # ─────────────────────────────────────────────────────────
 
 import logging
@@ -17,6 +14,8 @@ from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel, Field
 
 from app.services.gemini_service import generate_text, gemini_health_check
+from app.services.summarization_service import summarize_document
+from app.models.summarization import SummarizeRequest, SummarizeResponse
 
 router = APIRouter(
     prefix="/gemini",
@@ -117,3 +116,68 @@ async def gemini_health():
     result = gemini_health_check()
     logger.info("GET /gemini/health — available=%s", result["available"])
     return GeminiHealthResponse(**result)
+
+
+# ── Summarization Endpoint ─────────────────────────────────
+
+def _map_runtime_error_to_http(exc: RuntimeError) -> HTTPException:
+    """Convert a RuntimeError from the service layer to the correct HTTP status code."""
+    msg = str(exc)
+    if "not configured" in msg or "not initialised" in msg:
+        return HTTPException(status_code=503, detail={"success": False, "error": msg})
+    if "invalid" in msg.lower() and "key" in msg.lower():
+        return HTTPException(status_code=401, detail={"success": False, "error": msg})
+    if "rate limit" in msg.lower():
+        return HTTPException(status_code=429, detail={"success": False, "error": msg})
+    return HTTPException(status_code=502, detail={"success": False, "error": msg})
+
+
+@router.post(
+    "/summarize",
+    response_model=SummarizeResponse,
+    summary="Summarize a legal document using Gemini AI",
+    description=(
+        "Accepts extracted document text and returns a structured AI summary including "
+        "executive summary, key points, important clauses, obligations, risks, and "
+        "suggested next actions. Uses Gemini 2.5 Pro exclusively."
+    ),
+)
+async def summarize(request: SummarizeRequest):
+    """
+    POST /gemini/summarize
+
+    Input:  { "text": "...", "documentType": "NDA" }
+    Output: Structured JSON summary from Gemini 2.5 Pro.
+
+    The document text should come from the /intelligence/analyze pipeline.
+    This endpoint only performs AI summarization — extraction happens upstream.
+    """
+    logger.info(
+        "POST /gemini/summarize — request received. document_type=%s text_length=%d",
+        request.documentType,
+        len(request.text),
+    )
+
+    try:
+        result = summarize_document(
+            text=request.text,
+            document_type=request.documentType,
+        )
+        logger.info(
+            "POST /gemini/summarize — completed. duration_ms=%d",
+            result["processingTimeMs"],
+        )
+        return SummarizeResponse(success=True, **result)
+
+    except ValueError as exc:
+        # Validation errors: text too short, JSON parse failure, etc.
+        logger.warning("POST /gemini/summarize — validation error: %s", exc)
+        raise HTTPException(
+            status_code=422,
+            detail={"success": False, "error": str(exc)},
+        )
+
+    except RuntimeError as exc:
+        # Gemini API errors: rate limit, bad key, server error, etc.
+        logger.error("POST /gemini/summarize — Gemini error: %s", exc)
+        raise _map_runtime_error_to_http(exc)
