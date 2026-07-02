@@ -20,8 +20,9 @@ pdf2image==1.17.0         # Converts PDF pages → PIL Images for OCR
 Pillow==11.2.1            # Image loading, greyscale conversion for Tesseract
 
 # ── AI / NLP ───────────────────────────────────────────────
-openai==1.54.4            # OpenAI SDK (GPT-4 for summarization — Module 3)
+google-genai==2.10.0      # Official Google Gemini Python SDK (Module 3)
 langdetect==1.0.9         # Language detection for Feature 4
+httpx==0.28.1             # Required by google-genai for async HTTP
 # spacy==3.7.6            # Uncomment when we add NLP in Module 3
 
 # ── Testing ────────────────────────────────────────────────

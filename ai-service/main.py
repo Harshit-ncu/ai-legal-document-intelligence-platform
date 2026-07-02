@@ -10,6 +10,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from app.routers import extraction  # Module 2A: text extraction
 from app.routers import ocr          # Module 2B: OCR + scanned docs
 from app.routers import intelligence # Feature 4: Document Intelligence
+from app.routers import gemini       # Module 3.1: Gemini SDK infrastructure
 
 app = FastAPI(
     title="Legal AI Service",
@@ -36,8 +37,11 @@ app.include_router(ocr.router)
 # intelligence.router handles: POST /intelligence/analyze
 app.include_router(intelligence.router)
 
+# gemini.router handles:      POST /gemini/test, GET /gemini/health
+app.include_router(gemini.router)
+
 # Future modules will be added here:
-#   app.include_router(summarize.router)   # Module 3
+#   app.include_router(summarize.router)   # Module 3.2
 #   app.include_router(clauses.router)     # Module 4
 
 
