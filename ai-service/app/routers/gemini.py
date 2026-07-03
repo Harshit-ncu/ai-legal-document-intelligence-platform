@@ -3,10 +3,11 @@
 # FastAPI router for all Gemini AI endpoints.
 #
 # ENDPOINTS:
-#   POST /gemini/summarize     → AI-powered legal document summarization.
-#   POST /gemini/risk-analysis → AI-powered legal risk and compliance analysis.
-#   POST /gemini/test          → [DEV] Send a test prompt, get a response.
-#   GET  /gemini/health        → Check Gemini connectivity (no credentials exposed).
+#   POST /gemini/summarize           → AI-powered legal document summarization.
+#   POST /gemini/risk-analysis       → AI-powered legal risk and compliance analysis.
+#   POST /gemini/clause-intelligence → AI-powered clause breakdown and recommendations.
+#   POST /gemini/test                → [DEV] Send a test prompt, get a response.
+#   GET  /gemini/health              → Check Gemini connectivity (no credentials exposed).
 # ─────────────────────────────────────────────────────────
 
 import logging
@@ -19,6 +20,8 @@ from app.services.summarization_service import summarize_document
 from app.models.summarization import SummarizeRequest, SummarizeResponse
 from app.services.risk_analysis_service import analyze_document_risk
 from app.models.risk_analysis import RiskAnalysisRequest, RiskAnalysisResponse
+from app.services.clause_intelligence_service import analyze_clause_intelligence
+from app.models.clause_intelligence import ClauseIntelligenceRequest, ClauseIntelligenceResponse
 
 router = APIRouter(
     prefix="/gemini",
@@ -230,4 +233,52 @@ async def risk_analysis(request: RiskAnalysisRequest):
 
     except RuntimeError as exc:
         logger.error("POST /gemini/risk-analysis — Gemini error: %s", exc)
+        raise _map_runtime_error_to_http(exc)
+
+
+# ── Clause Intelligence Endpoint ───────────────────────────
+
+@router.post(
+    "/clause-intelligence",
+    response_model=ClauseIntelligenceResponse,
+    summary="Analyze a specific legal clause using Gemini AI",
+    description=(
+        "Accepts a specific legal clause text and returns a highly detailed breakdown, "
+        "including plain English translations, legal meaning, negotiation tips, "
+        "and prioritized suggestions."
+    ),
+)
+async def clause_intelligence(request: ClauseIntelligenceRequest):
+    """
+    POST /gemini/clause-intelligence
+
+    Input:  { "clause": "...", "documentType": "NDA" }
+    Output: Structured JSON clause analysis from Gemini 2.5 Pro.
+    """
+    logger.info(
+        "POST /gemini/clause-intelligence — request received. document_type=%s clause_length=%d",
+        request.documentType,
+        len(request.clause),
+    )
+
+    try:
+        result = analyze_clause_intelligence(
+            text=request.clause,
+            document_type=request.documentType,
+        )
+        logger.info(
+            "POST /gemini/clause-intelligence — completed. duration_ms=%d",
+            result["processingTimeMs"],
+        )
+        return ClauseIntelligenceResponse(success=True, **result)
+
+    except ValueError as exc:
+        logger.warning("POST /gemini/clause-intelligence — validation error: %s", exc)
+        raise HTTPException(
+            status_code=422,
+            detail={"success": False, "error": str(exc)},
+        )
+
+    except RuntimeError as exc:
+        logger.error("POST /gemini/clause-intelligence — Gemini error: %s", exc)
         raise _map_runtime_error_to_http(exc)
