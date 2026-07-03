@@ -6,6 +6,7 @@
 #   POST /gemini/summarize           → AI-powered legal document summarization.
 #   POST /gemini/risk-analysis       → AI-powered legal risk and compliance analysis.
 #   POST /gemini/clause-intelligence → AI-powered clause breakdown and recommendations.
+#   POST /gemini/chat                → AI Contract Assistant (Q&A on a single document).
 #   POST /gemini/test                → [DEV] Send a test prompt, get a response.
 #   GET  /gemini/health              → Check Gemini connectivity (no credentials exposed).
 # ─────────────────────────────────────────────────────────
@@ -22,6 +23,8 @@ from app.services.risk_analysis_service import analyze_document_risk
 from app.models.risk_analysis import RiskAnalysisRequest, RiskAnalysisResponse
 from app.services.clause_intelligence_service import analyze_clause_intelligence
 from app.models.clause_intelligence import ClauseIntelligenceRequest, ClauseIntelligenceResponse
+from app.services.document_chat_service import answer_document_question
+from app.models.document_chat import DocumentChatRequest, DocumentChatResponse
 
 router = APIRouter(
     prefix="/gemini",
@@ -281,4 +284,53 @@ async def clause_intelligence(request: ClauseIntelligenceRequest):
 
     except RuntimeError as exc:
         logger.error("POST /gemini/clause-intelligence — Gemini error: %s", exc)
+        raise _map_runtime_error_to_http(exc)
+
+
+# ── Document Chat Endpoint ─────────────────────────────────
+
+@router.post(
+    "/chat",
+    response_model=DocumentChatResponse,
+    summary="Ask questions about a legal document using Gemini AI",
+    description=(
+        "Accepts a document text and a natural language question. Returns a strictly "
+        "grounded answer based ONLY on the provided document, without inventing facts."
+    ),
+)
+async def document_chat(request: DocumentChatRequest):
+    """
+    POST /gemini/chat
+
+    Input:  { "documentText": "...", "documentType": "NDA", "question": "Can I terminate?" }
+    Output: Structured JSON answer from Gemini 2.5 Pro.
+    """
+    logger.info(
+        "POST /gemini/chat — request received. document_type=%s text_length=%d question_length=%d",
+        request.documentType,
+        len(request.documentText),
+        len(request.question),
+    )
+
+    try:
+        result = answer_document_question(
+            text=request.documentText,
+            document_type=request.documentType,
+            question=request.question,
+        )
+        logger.info(
+            "POST /gemini/chat — completed. duration_ms=%d",
+            result["processingTimeMs"],
+        )
+        return DocumentChatResponse(success=True, **result)
+
+    except ValueError as exc:
+        logger.warning("POST /gemini/chat — validation error: %s", exc)
+        raise HTTPException(
+            status_code=422,
+            detail={"success": False, "error": str(exc)},
+        )
+
+    except RuntimeError as exc:
+        logger.error("POST /gemini/chat — Gemini error: %s", exc)
         raise _map_runtime_error_to_http(exc)
