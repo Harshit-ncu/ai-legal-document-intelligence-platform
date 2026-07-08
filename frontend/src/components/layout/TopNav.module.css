@@ -1,0 +1,78 @@
+.topnav {
+  height: 64px;
+  background: var(--color-topnav-bg);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--color-border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 var(--space-6);
+  position: sticky;
+  top: 0;
+  z-index: 30;
+}
+
+.search {
+  flex-grow: 1;
+}
+
+.actions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+}
+
+.themeToggle {
+  background: transparent;
+  border: 1px solid var(--color-border);
+  border-radius: 50%;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: var(--color-text-secondary);
+  transition: all 0.2s ease;
+  font-size: 1.125rem;
+}
+
+.themeToggle:hover {
+  background: var(--color-bg-elevated);
+  color: var(--color-text-primary);
+  border-color: var(--color-border-hover);
+}
+
+.profile {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  cursor: pointer;
+  padding: var(--space-1) var(--space-2);
+  border-radius: 8px;
+  transition: background 0.2s ease;
+}
+
+.profile:hover {
+  background: var(--color-bg-elevated);
+}
+
+.avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: var(--color-accent);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  font-size: 0.875rem;
+}
+
+.userName {
+  color: var(--color-text-primary);
+  font-weight: 500;
+  font-size: 0.875rem;
+}

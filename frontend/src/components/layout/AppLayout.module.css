@@ -1,0 +1,25 @@
+.layout {
+  display: flex;
+  min-height: 100vh;
+  width: 100%;
+}
+
+.mainWrapper {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  margin-left: 260px; /* matches Sidebar width */
+  min-width: 0; /* allows content to shrink */
+}
+
+.mainContent {
+  flex-grow: 1;
+  padding: var(--space-6) var(--space-8);
+  overflow-x: hidden;
+}
+
+.contentContainer {
+  max-width: 1200px;
+  margin: 0 auto;
+  width: 100%;
+}

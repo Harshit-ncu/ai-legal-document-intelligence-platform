@@ -1,0 +1,74 @@
+.statCard {
+  height: 100%;
+}
+
+.content {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: var(--space-5);
+  gap: var(--space-4);
+}
+
+.info {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.title {
+  color: var(--color-text-secondary);
+  font-size: 0.875rem;
+  font-weight: 500;
+  margin: 0;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.valueContainer {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-3);
+}
+
+.value {
+  color: var(--color-text-primary);
+  font-size: 1.875rem;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.trend {
+  font-size: 0.875rem;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+}
+
+.positive {
+  color: var(--color-success);
+}
+
+.negative {
+  color: var(--color-error);
+}
+
+.description {
+  color: var(--color-text-muted);
+  font-size: 0.875rem;
+  margin: var(--space-1) 0 0 0;
+}
+
+.iconWrapper {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  background: var(--color-accent-subtle);
+  color: var(--color-accent-light);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  flex-shrink: 0;
+}

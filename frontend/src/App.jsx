@@ -1,20 +1,41 @@
 // src/App.jsx
 // ─────────────────────────────────────────────────────────
 // Root application component.
-//
-// Right now this app has one page (UploadPage).
-// In future modules we'll add react-router-dom here to handle
-// multiple pages (e.g. /upload, /documents/:id, /results).
-//
-// Keeping App.jsx separate from UploadPage lets us add routing
-// without touching any page-level components.
+// Configures React Router and all application routes.
 // ─────────────────────────────────────────────────────────
 
+import React from 'react';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+
+// Layout
+import { AppLayout } from './components/layout/AppLayout';
+
+// Pages
+import DashboardPage from './pages/DashboardPage';
 import UploadPage from './pages/UploadPage';
+import SummaryPage from './pages/SummaryPage';
+import RiskAnalysisPage from './pages/RiskAnalysisPage';
+import ClauseIntelligencePage from './pages/ClauseIntelligencePage';
+import ChatPage from './pages/ChatPage';
+import SettingsPage from './pages/SettingsPage';
 
 const App = () => {
-  // Future: <Router><Route path="/" element={<UploadPage />} /></Router>
-  return <UploadPage />;
+  return (
+    <Router>
+      <Routes>
+        <Route element={<AppLayout />}>
+          <Route path="/" element={<DashboardPage />} />
+          <Route path="/upload" element={<UploadPage />} />
+          <Route path="/summary" element={<SummaryPage />} />
+          <Route path="/risk" element={<RiskAnalysisPage />} />
+          <Route path="/clauses" element={<ClauseIntelligencePage />} />
+          <Route path="/chat" element={<ChatPage />} />
+          <Route path="/settings" element={<SettingsPage />} />
+          <Route path="*" element={<Navigate to="/" replace />} />
+        </Route>
+      </Routes>
+    </Router>
+  );
 };
 
 export default App;
