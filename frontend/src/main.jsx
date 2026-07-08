@@ -16,13 +16,16 @@ import { createRoot } from 'react-dom/client';
 import App from './App.jsx';
 import ErrorBoundary from './components/ErrorBoundary';
 import { ThemeProvider } from './contexts/ThemeContext';
+import { DocumentProvider } from './contexts/DocumentContext';
 import './index.css';
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
     <ErrorBoundary>
       <ThemeProvider>
-        <App />
+        <DocumentProvider>
+          <App />
+        </DocumentProvider>
       </ThemeProvider>
     </ErrorBoundary>
   </StrictMode>,

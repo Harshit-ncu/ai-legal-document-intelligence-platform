@@ -1,103 +1,80 @@
 // src/hooks/useFileUpload.js
 // ─────────────────────────────────────────────────────────
-// Custom React hook that manages all upload state and logic.
-//
-// Why extract this into a hook?
-//   The UploadPage component would be very long if it contained
-//   both the UI code (JSX) AND all the state management.
-//   This hook handles ALL state; the component only renders.
-//
-// What is a custom hook?
-//   A regular JS function whose name starts with "use" and
-//   that can call other React hooks (useState, useCallback).
-//   It's the standard React pattern for sharing stateful logic.
+// Custom React hook that manages upload logic.
+// Refactored to consume the global DocumentContext.
 // ─────────────────────────────────────────────────────────
 
-import { useState, useCallback } from 'react';
+import { useCallback, useState } from 'react';
 import { uploadDocument } from '../services/api';
 import { validateFile } from '../utils/fileHelpers';
+import { useDocumentContext } from '../contexts/DocumentContext';
 
-// The possible states our upload flow can be in.
-// Using a string enum makes debugging easy — you can log the state.
 export const UPLOAD_STATE = {
-  IDLE:       'idle',       // no file selected yet
-  SELECTED:   'selected',   // file chosen, not yet uploaded
-  UPLOADING:  'uploading',  // upload in progress
-  SUCCESS:    'success',    // upload completed
-  ERROR:      'error',      // something went wrong
+  IDLE:       'idle',
+  SELECTED:   'selected',
+  UPLOADING:  'uploading',
+  SUCCESS:    'success',
+  ERROR:      'error',
 };
 
 const useFileUpload = () => {
-  // ── State ───────────────────────────────────────────────
-  const [uploadState, setUploadState] = useState(UPLOAD_STATE.IDLE);
-  const [selectedFile, setSelectedFile] = useState(null);   // File object
-  const [progress, setProgress]         = useState(0);       // 0-100
-  const [result, setResult]             = useState(null);    // backend response
-  const [error, setError]               = useState(null);    // error message string
+  const { state, setUploadedFile, setUploadProgress, setUploadSuccess, setExtractionData, setError, resetDocument } = useDocumentContext();
 
-  // ── selectFile ──────────────────────────────────────────
-  // Called when the user picks a file (drop or click).
-  // useCallback memoizes the function so React doesn't
-  // recreate it on every render (small perf optimization).
+  // Local state for the upload result (we could also put this in context, but keeping it here for now unless needed globally)
+  const [result, setResult] = useState(null);
+
+  // Map global state to hook output for backward compatibility
+  const uploadState = state.uploadStatus;
+  const selectedFile = state.uploadedFile;
+  const progress = state.uploadProgress;
+  const error = state.error;
+
   const selectFile = useCallback((file) => {
-    // Reset previous state first
-    setError(null);
+    resetDocument();
     setResult(null);
-    setProgress(0);
 
-    // Validate before accepting the file
     const validationError = validateFile(file);
     if (validationError) {
       setError(validationError);
-      setUploadState(UPLOAD_STATE.ERROR);
       return;
     }
 
-    setSelectedFile(file);
-    setUploadState(UPLOAD_STATE.SELECTED);
-  }, []);
+    setUploadedFile(file);
+  }, [resetDocument, setError, setUploadedFile]);
 
-  // ── upload ──────────────────────────────────────────────
-  // Called when the user clicks "Analyze Document".
-  // Sends the file to the backend and tracks progress.
   const upload = useCallback(async () => {
-    if (!selectedFile) return;
+    if (!state.uploadedFile) return;
 
-    setUploadState(UPLOAD_STATE.UPLOADING);
-    setProgress(0);
-    setError(null);
+    setUploadProgress(0);
 
     try {
-      // uploadDocument(file, progressCallback) → from services/api.js
-      const data = await uploadDocument(selectedFile, (percent) => {
-        setProgress(percent);
+      const data = await uploadDocument(state.uploadedFile, (percent) => {
+        setUploadProgress(percent);
       });
 
       setResult(data);
-      setUploadState(UPLOAD_STATE.SUCCESS);
-      setProgress(100);
+      setUploadSuccess();
+      
+      // Also set the extraction data into global context
+      setExtractionData({
+        extractedText: data.text, // Assuming data contains text
+        documentType: data.documentType,
+        language: data.language
+      });
 
     } catch (err) {
-      // axios wraps HTTP error responses in err.response
       const message = err.response?.data?.error || 'Upload failed. Please try again.';
       setError(message);
-      setUploadState(UPLOAD_STATE.ERROR);
     }
-  }, [selectedFile]);
+  }, [state.uploadedFile, setUploadProgress, setUploadSuccess, setExtractionData, setError]);
 
-  // ── reset ───────────────────────────────────────────────
-  // Clears everything so the user can start a new upload.
   const reset = useCallback(() => {
-    setUploadState(UPLOAD_STATE.IDLE);
-    setSelectedFile(null);
-    setProgress(0);
+    resetDocument();
     setResult(null);
-    setError(null);
-  }, []);
+  }, [resetDocument]);
 
-  // Return everything the component needs
   return {
-    uploadState,
+    uploadState: state.uploadedFile && state.uploadStatus === 'idle' ? UPLOAD_STATE.SELECTED : uploadState,
     selectedFile,
     progress,
     result,
