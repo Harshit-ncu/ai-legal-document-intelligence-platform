@@ -28,6 +28,7 @@ from google.genai import errors as genai_errors
 # identifiable and can be filtered independently.
 logger = logging.getLogger("gemini_service")
 logger.setLevel(logging.INFO)
+logger.propagate = False  # records handled by this logger's own StreamHandler only
 if not logger.handlers:
     handler = logging.StreamHandler()
     handler.setFormatter(
@@ -74,7 +75,77 @@ if _API_KEY:
         _client = None
 
 
+# ── Retry configuration ────────────────────────────────────
+# Applied only to HTTP 429 (rate-limit) responses.
+# Never retried: 401 (invalid key), 400 (bad request), non-retryable errors.
+_MAX_RETRIES: int = 2
+_RETRY_BASE_DELAY_S: float = 1.0  # first wait; doubles each attempt
+
+
 # ── Public API ─────────────────────────────────────────────
+
+def _call_with_retry(target_model: str, prompt: str) -> str:
+    """
+    Internal: call the Gemini API with exponential backoff on 429.
+
+    Retries up to _MAX_RETRIES times with doubling delay.
+    Raises RuntimeError on all non-retryable or exhausted errors.
+    """
+    delay = _RETRY_BASE_DELAY_S
+    last_exc: RuntimeError | None = None
+
+    for attempt in range(1 + _MAX_RETRIES):  # attempt 0 is the first try
+        try:
+            response = _client.models.generate_content(
+                model=target_model,
+                contents=prompt,
+            )
+            return response.text
+
+        except genai_errors.ClientError as exc:
+            exc_str = str(exc)
+
+            # 401 / invalid API key — not retryable, fail immediately
+            if "API_KEY_INVALID" in exc_str or "INVALID_ARGUMENT" in exc_str:
+                raise RuntimeError(
+                    "Gemini API key is invalid. Please check GEMINI_API_KEY in your .env file."
+                ) from exc
+
+            # 429 / rate limit — retryable
+            if "RESOURCE_EXHAUSTED" in exc_str or "429" in exc_str:
+                if attempt < _MAX_RETRIES:
+                    # Respect Retry-After header if Gemini includes it
+                    retry_after = getattr(exc, "retry_after", None)
+                    wait = float(retry_after) if retry_after else delay
+                    logger.warning(
+                        "Gemini rate limit hit (attempt %d/%d). Retrying in %.1fs.",
+                        attempt + 1, 1 + _MAX_RETRIES, wait,
+                    )
+                    time.sleep(wait)
+                    delay *= 2  # exponential backoff
+                    last_exc = RuntimeError(
+                        "Gemini API rate limit exceeded. Please wait a moment before retrying."
+                    )
+                    continue
+                else:
+                    logger.warning("Gemini rate limit hit. duration_ms=exhausted")
+                    raise RuntimeError(
+                        "Gemini API rate limit exceeded. Please wait a moment before retrying."
+                    ) from exc
+
+            # Other 4xx
+            raise RuntimeError(f"Gemini API error: {exc}") from exc
+
+        except genai_errors.ServerError as exc:
+            raise RuntimeError(f"Gemini server error: {exc}") from exc
+
+        except Exception as exc:
+            raise RuntimeError(
+                f"Unexpected error communicating with Gemini: {exc}"
+            ) from exc
+
+    # Should only reach here if all retries were rate-limited
+    raise last_exc  # type: ignore[misc]
 
 def generate_text(prompt: str, model: str | None = None) -> str:
     """
@@ -105,60 +176,19 @@ def generate_text(prompt: str, model: str | None = None) -> str:
     logger.info("Gemini request started. model=%s", target_model)
 
     try:
-        response = _client.models.generate_content(
-            model=target_model,
-            contents=prompt,
-        )
+        text = _call_with_retry(target_model, prompt)
 
         elapsed_ms = int((time.perf_counter() - start_time) * 1000)
         logger.info(
             "Gemini request completed. model=%s duration_ms=%d", target_model, elapsed_ms
         )
+        return text
 
-        # google-genai returns a GenerateContentResponse object.
-        # .text is a convenience property that concatenates all text parts.
-        return response.text
-
-    except genai_errors.ClientError as exc:
+    except RuntimeError:
         elapsed_ms = int((time.perf_counter() - start_time) * 1000)
-        exc_str = str(exc)
-
-        # 401 / invalid API key
-        # google-genai 2.x format: "400 INVALID_ARGUMENT. {...API_KEY_INVALID...}"
-        if "API_KEY_INVALID" in exc_str or "INVALID_ARGUMENT" in exc_str:
-            logger.error("Gemini auth failure: invalid API key. duration_ms=%d", elapsed_ms)
-            raise RuntimeError(
-                "Gemini API key is invalid. Please check GEMINI_API_KEY in your .env file."
-            ) from exc
-
-        # 429 / rate limit
-        # google-genai 2.x format: "429 RESOURCE_EXHAUSTED. {...}"
-        if "RESOURCE_EXHAUSTED" in exc_str or "429" in exc_str:
-            logger.warning("Gemini rate limit hit. duration_ms=%d", elapsed_ms)
-            raise RuntimeError(
-                "Gemini API rate limit exceeded. Please wait a moment before retrying."
-            ) from exc
-
-        # Other 4xx errors (bad request, unsupported model, etc.)
-        logger.error("Gemini client error: %s duration_ms=%d", exc, elapsed_ms)
-        raise RuntimeError(f"Gemini API error: {exc}") from exc
-
-    except genai_errors.ServerError as exc:
-        elapsed_ms = int((time.perf_counter() - start_time) * 1000)
-        # google-genai 2.x format: "500 INTERNAL. {...}"
-        logger.error("Gemini server error: %s duration_ms=%d", exc, elapsed_ms)
-        raise RuntimeError(f"Gemini server error: {exc}") from exc
-
-    except Exception as exc:
-        elapsed_ms = int((time.perf_counter() - start_time) * 1000)
-        # Catch network timeouts, connection refused, etc.
-        logger.error(
-            "Unexpected Gemini error: %s (%s) duration_ms=%d",
-            exc,
-            type(exc).__name__,
-            elapsed_ms,
-        )
-        raise RuntimeError(f"Unexpected error communicating with Gemini: {exc}") from exc
+        # Log the error category before re-raising so callers get it once.
+        logger.error("Gemini request failed. model=%s duration_ms=%d", target_model, elapsed_ms)
+        raise
 
 
 def gemini_health_check() -> dict:

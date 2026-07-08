@@ -37,12 +37,14 @@ app.include_router(ocr.router)
 # intelligence.router handles: POST /intelligence/analyze
 app.include_router(intelligence.router)
 
-# gemini.router handles:      POST /gemini/test, GET /gemini/health
+# gemini.router handles all Gemini-powered AI endpoints (Modules 3.1–3.5):
+#   POST /gemini/test               — 3.1 infrastructure smoke-test
+#   GET  /gemini/health             — 3.1 connectivity health check
+#   POST /gemini/summarize          — 3.2 AI document summarization
+#   POST /gemini/risk-analysis      — 3.3 legal risk analysis
+#   POST /gemini/clause-intelligence— 3.4 clause breakdown & recommendations
+#   POST /gemini/chat               — 3.5 AI contract Q&A assistant
 app.include_router(gemini.router)
-
-# Future modules will be added here:
-#   app.include_router(summarize.router)   # Module 3.2
-#   app.include_router(clauses.router)     # Module 4
 
 
 @app.get("/health")

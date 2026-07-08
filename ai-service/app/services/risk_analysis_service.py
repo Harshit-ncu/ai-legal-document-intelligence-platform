@@ -20,6 +20,7 @@ from app.utils.risk_prompts import build_risk_analysis_prompt
 
 logger = logging.getLogger("risk_analysis_service")
 logger.setLevel(logging.INFO)
+logger.propagate = False  # records handled by this logger's own StreamHandler only
 if not logger.handlers:
     handler = logging.StreamHandler()
     handler.setFormatter(

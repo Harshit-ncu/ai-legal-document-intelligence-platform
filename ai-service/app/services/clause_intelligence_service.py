@@ -20,6 +20,7 @@ from app.utils.clause_prompts import build_clause_intelligence_prompt
 
 logger = logging.getLogger("clause_intelligence_service")
 logger.setLevel(logging.INFO)
+logger.propagate = False  # records handled by this logger's own StreamHandler only
 if not logger.handlers:
     handler = logging.StreamHandler()
     handler.setFormatter(

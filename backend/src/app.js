@@ -30,10 +30,15 @@ app.use(morgan('dev'));
 
 // ── Routes ────────────────────────────────────────────────
 
-// Health-check endpoint — always useful to verify the server is up
-app.get('/api/health', (_req, res) => {
+// Health-check endpoint — a named handler is shared between both
+// /api/health (canonical) and /health (alias for load-balancers and
+// orchestration health probes that expect a root-level /health path).
+function handleHealthCheck(_req, res) {
   res.json({ status: 'ok', service: 'legal-ai-backend' });
-});
+}
+
+app.get('/api/health', handleHealthCheck); // canonical
+app.get('/health',     handleHealthCheck); // alias
 
 // Document upload routes → mounted at /api/documents
 // e.g. POST /api/documents/upload

@@ -20,6 +20,7 @@ from app.utils.chat_prompts import build_chat_prompt
 
 logger = logging.getLogger("document_chat_service")
 logger.setLevel(logging.INFO)
+logger.propagate = False  # records handled by this logger's own StreamHandler only
 if not logger.handlers:
     handler = logging.StreamHandler()
     handler.setFormatter(

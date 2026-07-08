@@ -33,6 +33,8 @@ router = APIRouter(
 
 logger = logging.getLogger("gemini_service.router")
 logger.setLevel(logging.INFO)
+logger.propagate = False  # prevent double-logging: this logger's records must not
+                          # also propagate to the parent 'gemini_service' logger.
 if not logger.handlers:
     handler = logging.StreamHandler()
     handler.setFormatter(
