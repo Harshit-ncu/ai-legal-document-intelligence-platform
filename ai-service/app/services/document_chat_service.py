@@ -1,11 +1,11 @@
 # app/services/document_chat_service.py
 # ─────────────────────────────────────────────────────────
-# AI Contract Assistant Service — Module 3.5
+# Verified AI Contract Assistant Service — Module 3.5
 #
 # RESPONSIBILITIES:
 #   - Accept extracted document text, document type, and a user's question.
 #   - Build the chat prompt via chat_prompts.py.
-#   - Call generate_text() from gemini_service.py.
+#   - Call generate_text() from gemini_service.py (no SDK duplication).
 #   - Parse and validate the structured JSON returned by Gemini.
 #   - Return a clean Python dict matching the DocumentChatResponse schema.
 #   - Handle every failure mode gracefully without crashing.
@@ -30,12 +30,17 @@ if not logger.handlers:
 # ── Constants ─────────────────────────────────────────────
 CHAT_MODEL = "gemini-2.5-pro"
 MIN_TEXT_LENGTH = 50
+MIN_QUESTION_LENGTH = 3
+
+# Standard fallback answer when the document doesn't contain the information
+UNKNOWN_ANSWER = "I cannot determine this from the provided document."
 
 
 def _parse_gemini_json(raw_text: str) -> dict:
     """Extract and parse the JSON object from Gemini's raw response text."""
     text = raw_text.strip()
 
+    # Strip markdown code fences (```json ... ``` or ``` ... ```)
     if text.startswith("```"):
         lines = text.splitlines()
         lines = lines[1:]
@@ -52,64 +57,87 @@ def _parse_gemini_json(raw_text: str) -> dict:
         ) from exc
 
 
+def _validate_source_references(refs: list) -> list:
+    """Ensure each source reference has the required fields; drop malformed entries."""
+    validated = []
+    for ref in refs:
+        if not isinstance(ref, dict):
+            continue
+        validated.append(
+            {
+                "section": ref.get("section", "Unknown Section"),
+                "clause":  ref.get("clause", "Unknown Clause"),
+                "excerpt": ref.get("excerpt", "Not specified."),
+            }
+        )
+    return validated
+
+
 def _validate_structure(data: dict) -> dict:
-    """Validate that all required fields are present and fill defaults."""
-    
-    # Handle Confidence Score
+    """Validate that all required fields are present and fill safe defaults."""
+
+    # Confidence: must be an integer clamped to 0-100
     if "confidence" not in data or not isinstance(data["confidence"], int):
         logger.warning("Invalid or missing 'confidence'. Defaulting to 0.")
         data["confidence"] = 0
     else:
-        # Clamp to 0-100
         data["confidence"] = max(0, min(100, data["confidence"]))
 
-    # Standard string fields
-    string_fields = ["answer", "reasoning"]
-    for field in string_fields:
-        if field not in data or not data[field]:
-            logger.warning("Gemini response missing or invalid string field '%s'. Using default.", field)
-            data[field] = "I cannot determine this from the provided document."
+    # String fields — fall back to UNKNOWN_ANSWER to stay truthful
+    for field in ("answer", "reasoning"):
+        if field not in data or not str(data[field]).strip():
+            logger.warning("Gemini response missing string field '%s'. Using safe default.", field)
+            data[field] = UNKNOWN_ANSWER
 
-    # List fields
-    list_fields = {
-        "referencedSections": [],
-        "limitations": []
-    }
-    for field, default in list_fields.items():
-        if field not in data or not isinstance(data[field], list):
-            logger.warning("Gemini response missing or invalid list field '%s'. Using default.", field)
-            data[field] = default
+    # sourceReferences: list of objects
+    if "sourceReferences" not in data or not isinstance(data["sourceReferences"], list):
+        logger.warning("Gemini response missing 'sourceReferences'. Using empty list.")
+        data["sourceReferences"] = []
+    else:
+        data["sourceReferences"] = _validate_source_references(data["sourceReferences"])
+
+    # limitations: list of strings
+    if "limitations" not in data or not isinstance(data["limitations"], list):
+        logger.warning("Gemini response missing 'limitations'. Using empty list.")
+        data["limitations"] = []
+
+    # followUpQuestions: list of strings
+    if "followUpQuestions" not in data or not isinstance(data["followUpQuestions"], list):
+        logger.warning("Gemini response missing 'followUpQuestions'. Using empty list.")
+        data["followUpQuestions"] = []
 
     return data
 
 
 def answer_document_question(text: str, document_type: str, question: str) -> dict:
     """
-    Generate a structured legal answer to a user's question about a document.
+    Generate a structured answer to a user's question about a document.
 
     Args:
-        text:          The document text.
+        text:          The extracted document text.
         document_type: Document classification label.
-        question:      The user's question.
+        question:      The user's natural language question.
 
     Returns:
         dict containing all DocumentChatResponse fields (excluding 'success').
 
     Raises:
-        ValueError: If the text is too short or the response cannot be parsed.
-        RuntimeError: If the Gemini API call fails.
+        ValueError:   If text/question too short, or the response cannot be parsed.
+        RuntimeError: If the Gemini API call fails (rate limit, auth, server error).
     """
     if not text or len(text.strip()) < MIN_TEXT_LENGTH:
         raise ValueError(
             f"Document text is too short to query "
             f"(minimum {MIN_TEXT_LENGTH} characters, got {len(text.strip())})."
         )
-    if not question or len(question.strip()) < 3:
-        raise ValueError("Question is too short.")
+    if not question or len(question.strip()) < MIN_QUESTION_LENGTH:
+        raise ValueError(
+            f"Question is too short (minimum {MIN_QUESTION_LENGTH} characters)."
+        )
 
     start_time = time.perf_counter()
 
-    # DO NOT log the actual document text or full question in production if they are sensitive
+    # Log operational metadata only — never log document text or question body
     logger.info(
         "Document chat started. document_type=%s text_length=%d question_length=%d model=%s",
         document_type,
@@ -138,8 +166,9 @@ def answer_document_question(text: str, document_type: str, question: str) -> di
         "answer":             validated["answer"],
         "confidence":         validated["confidence"],
         "reasoning":          validated["reasoning"],
-        "referencedSections": validated["referencedSections"],
+        "sourceReferences":   validated["sourceReferences"],
         "limitations":        validated["limitations"],
+        "followUpQuestions":  validated["followUpQuestions"],
         "processingTimeMs":   elapsed_ms,
         "modelUsed":          CHAT_MODEL,
     }

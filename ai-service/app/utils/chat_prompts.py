@@ -1,12 +1,12 @@
 # app/utils/chat_prompts.py
 # ─────────────────────────────────────────────────────────
-# Prompt builder for Module 3.5 – AI Contract Assistant
+# Prompt builder for Module 3.5 – Verified AI Contract Assistant.
 #
 # DESIGN PRINCIPLES:
 #   1. Behave as an experienced legal contract analyst.
-#   2. Strict grounding: Never invent facts. Only use the provided document.
-#   3. Return "I cannot determine this from the provided document." if the answer isn't present.
-#   4. Output strictly conforming JSON based on the provided schema.
+#   2. Strict grounding: ONLY use the supplied document.
+#   3. Never invent facts, clauses, or assumptions.
+#   4. Return structured JSON with source references and follow-up questions.
 # ─────────────────────────────────────────────────────────
 
 MAX_DOCUMENT_CHARS = 80_000
@@ -14,12 +14,12 @@ MAX_DOCUMENT_CHARS = 80_000
 
 def build_chat_prompt(document_text: str, document_type: str, question: str) -> str:
     """
-    Build the full prompt sent to Gemini for document chat.
+    Build the full prompt sent to Gemini for document Q&A.
 
     Args:
         document_text: The extracted text of the document.
         document_type: A label describing the document (e.g. 'NDA', 'Lease').
-        question: The user's question about the document.
+        question:      The user's natural language question.
 
     Returns:
         A fully-formed prompt string ready to pass to generate_text().
@@ -32,36 +32,48 @@ def build_chat_prompt(document_text: str, document_type: str, question: str) -> 
         else ""
     )
 
-    prompt = f"""You are an experienced legal contract analyst.
+    prompt = f"""You are an experienced legal contract analyst reviewing a {document_type} for a client who is NOT a lawyer.
 
-Your task is to answer a user's question about the following {document_type} in a strictly structured JSON format.
+Your task is to answer the user's question about the document in a strictly structured JSON format.
 
-RULES:
-- Answer ONLY using the supplied document.
-- Never invent facts, fabricate clauses, or assume information.
-- If the answer is not present in the document, your answer must be: "I cannot determine this from the provided document."
-- Explain answers in plain English.
-- Respond with ONLY a valid JSON object. No markdown, no code fences, no commentary.
-- Every field must be present. Use "None" or an empty array [] if a field cannot be determined.
-- The "confidence" must be an integer from 0 to 100.
+ABSOLUTE RULES:
+1. Answer ONLY from the supplied document. Never invent, fabricate, or assume facts.
+2. If the answer does not exist in the document, your answer must be exactly:
+   "I cannot determine this from the provided document."
+3. Never fabricate clause references. Only cite clauses you can actually identify in the text.
+4. Explain answers in clear English suitable for non-lawyers.
+5. Keep answers concise but accurate.
+6. Cite the supporting section or clause whenever possible.
+7. Respond with ONLY a valid JSON object. No markdown, no code fences, no commentary.
+8. Every field must be present. Use an empty array [] if lists have no entries.
+9. The "confidence" must be an integer from 0 to 100.
 
 REQUIRED JSON SCHEMA (respond with exactly this structure):
 {{
   "answer": "string",
-  "confidence": 94,
+  "confidence": 95,
   "reasoning": "string",
-  "referencedSections": [
-    "string"
+  "sourceReferences": [
+    {{
+      "section": "string",
+      "clause": "string",
+      "excerpt": "Short relevant quotation or paraphrase from the document."
+    }}
   ],
   "limitations": [
+    "string"
+  ],
+  "followUpQuestions": [
+    "string",
+    "string",
     "string"
   ]
 }}
 
-USER's QUESTION:
+USER'S QUESTION:
 {question}
 
-DOCUMENT TO ANALYZE:
+DOCUMENT TO ANALYZE ({document_type}):
 {truncation_note}
 ---
 {truncated}

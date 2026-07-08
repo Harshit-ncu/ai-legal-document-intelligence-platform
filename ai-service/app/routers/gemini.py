@@ -132,7 +132,7 @@ async def gemini_health():
 def _map_runtime_error_to_http(exc: RuntimeError) -> HTTPException:
     """Convert a RuntimeError from the service layer to the correct HTTP status code."""
     msg = str(exc)
-    if "not configured" in msg or "not initialised" in msg:
+    if "not configured" in msg or "not initialised" in msg or "not initialized" in msg or "unavailable" in msg.lower():
         return HTTPException(status_code=503, detail={"success": False, "error": msg})
     if "invalid" in msg.lower() and "key" in msg.lower():
         return HTTPException(status_code=401, detail={"success": False, "error": msg})
