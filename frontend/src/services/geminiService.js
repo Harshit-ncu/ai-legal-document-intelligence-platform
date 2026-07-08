@@ -1,7 +1,7 @@
 import axios from 'axios';
 
-// Uses the AI Service port mapped via Vite proxy, or the express backend which forwards it
-const AI_API_BASE = '/api/gemini'; // Assuming proxy handles the routing
+// Direct connection to the FastAPI AI service which has CORS enabled for frontend
+const AI_API_BASE = 'http://localhost:8000/gemini';
 
 /**
  * Request an executive summary from the AI service.
@@ -9,9 +9,11 @@ const AI_API_BASE = '/api/gemini'; // Assuming proxy handles the routing
  * @param {string} documentType 
  */
 export const summarizeDocument = async (documentText, documentType) => {
-  // Placeholder - logic to be implemented later
-  console.log("summarizeDocument called", { documentType });
-  return null;
+  const response = await axios.post(`${AI_API_BASE}/summarize`, {
+    text: documentText,
+    documentType: documentType || 'Unknown'
+  });
+  return response.data;
 };
 
 /**
