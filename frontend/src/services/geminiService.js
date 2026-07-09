@@ -22,9 +22,11 @@ export const summarizeDocument = async (documentText, documentType) => {
  * @param {string} documentType 
  */
 export const analyzeRisk = async (documentText, documentType) => {
-  // Placeholder - logic to be implemented later
-  console.log("analyzeRisk called", { documentType });
-  return null;
+  const response = await axios.post(`${AI_API_BASE}/risk-analysis`, {
+    text: documentText,
+    documentType: documentType || 'Unknown'
+  });
+  return response.data;
 };
 
 /**

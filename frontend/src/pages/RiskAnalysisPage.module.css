@@ -1,0 +1,140 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+}
+
+.error {
+  margin-bottom: var(--space-4);
+}
+
+.loadingContainer {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+}
+
+.resultsContainer {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+  animation: fadeIn 0.4s ease-out forwards;
+}
+
+.statsGrid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-4);
+}
+
+@media (min-width: 768px) {
+  .statsGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+.statHigh {
+  border-left: 4px solid var(--color-error);
+}
+
+.statMedium {
+  border-left: 4px solid var(--color-warning);
+}
+
+.statLow {
+  border-left: 4px solid var(--color-success);
+}
+
+.resultCard {
+  background: var(--color-bg-surface);
+}
+
+.headerHigh {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid var(--color-error-border);
+  background: var(--color-error-bg);
+}
+
+.headerMedium {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid var(--color-warning-border);
+  background: var(--color-warning-bg);
+}
+
+.headerLow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid var(--color-info-border);
+  background: var(--color-info-bg);
+}
+
+.riskList {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.riskItem {
+  padding-bottom: var(--space-4);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.riskItem:last-child {
+  padding-bottom: 0;
+  border-bottom: none;
+}
+
+.riskTitle {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin: 0 0 var(--space-1) 0;
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: var(--color-text-primary);
+}
+
+.riskDesc {
+  margin: 0 0 var(--space-2) 0;
+  color: var(--color-text-secondary);
+  line-height: 1.5;
+}
+
+.recommendation {
+  background: var(--color-bg-elevated);
+  padding: var(--space-3);
+  border-radius: 6px;
+  border-left: 3px solid var(--color-accent);
+  color: var(--color-text-primary);
+  font-size: 0.95rem;
+}
+
+.list {
+  margin: 0;
+  padding-left: var(--space-5);
+  color: var(--color-text-primary);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  line-height: 1.5;
+}
+
+.skeletonLine {
+  margin-bottom: var(--space-3);
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
