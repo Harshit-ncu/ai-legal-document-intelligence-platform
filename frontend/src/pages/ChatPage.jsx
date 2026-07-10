@@ -7,6 +7,7 @@ import { EmptyState } from '../components/ui/EmptyState';
 import { Button } from '../components/ui/Button';
 import { ErrorMessage } from '../components/ui/ErrorMessage';
 import { Spinner } from '../components/ui/Spinner';
+import { User, Scale, Bot, UploadCloud } from 'lucide-react';
 import styles from './ChatPage.module.css';
 
 // ── Helpers ───────────────────────────────────────────────
@@ -26,7 +27,9 @@ function resolveError(err) {
 function UserBubble({ text }) {
   return (
     <div className={`${styles.messageRow} ${styles.user}`}>
-      <div className={styles.avatar}>👤</div>
+      <div className={styles.avatar}>
+        <User size={18} />
+      </div>
       <div className={styles.bubble}>{text}</div>
     </div>
   );
@@ -35,7 +38,9 @@ function UserBubble({ text }) {
 function AiBubble({ data, onFollowUp }) {
   return (
     <div className={`${styles.messageRow} ${styles.ai}`}>
-      <div className={styles.avatar}>⚖️</div>
+      <div className={styles.avatar}>
+        <Bot size={18} />
+      </div>
       <div>
         <div className={styles.bubble}>
           <p className={styles.answerText}>{data.answer}</p>
@@ -109,7 +114,9 @@ function AiBubble({ data, onFollowUp }) {
 function ThinkingBubble() {
   return (
     <div className={styles.thinkingRow}>
-      <div className={styles.avatar}>⚖️</div>
+      <div className={styles.avatar}>
+        <Bot size={18} />
+      </div>
       <div className={styles.thinkingBubble}>
         <Spinner size="small" /> Thinking…
       </div>
@@ -177,7 +184,7 @@ const ChatPage = () => {
           description="Ask questions about the uploaded legal document."
         />
         <EmptyState
-          icon="📤"
+          icon={<UploadCloud size={48} />}
           title="No Document Uploaded"
           description="Upload a document before starting a conversation."
           action={
@@ -214,7 +221,9 @@ const ChatPage = () => {
         <div className={styles.messageArea}>
           {messages.length === 0 && !isThinking && (
             <div className={styles.chatWelcome}>
-              <div className={styles.chatWelcomeIcon}>⚖️</div>
+              <div className={styles.chatWelcomeIcon}>
+                <Scale size={48} />
+              </div>
               <div className={styles.chatWelcomeTitle}>Ask anything about your document</div>
               <div className={styles.chatWelcomeBody}>
                 Questions are answered strictly from the uploaded document's content — no guessing.

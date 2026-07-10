@@ -10,6 +10,7 @@ import { ErrorMessage } from '../components/ui/ErrorMessage';
 import { Skeleton } from '../components/ui/Skeleton';
 import { Badge } from '../components/ui/Badge';
 import { StatCard } from '../components/ui/StatCard';
+import { UploadCloud, Flag, AlertTriangle, AlertCircle, CheckCircle, Search } from 'lucide-react';
 import styles from './RiskAnalysisPage.module.css';
 
 const RiskAnalysisPage = () => {
@@ -51,7 +52,7 @@ const RiskAnalysisPage = () => {
     return (
       <div className={styles.container}>
         <EmptyState 
-          icon="📤" 
+          icon={<UploadCloud size={48} />} 
           title="No Document Uploaded" 
           description="Upload a document before running risk analysis." 
           action={
@@ -111,7 +112,7 @@ const RiskAnalysisPage = () => {
 
       {!isGenerating && !riskData && !error && (
         <EmptyState 
-          icon="🚩" 
+          icon={<Flag size={48} />} 
           title="Ready for Analysis" 
           description="Click the button above to scan your document for legal risks, missing clauses, and obligations." 
         />
@@ -126,8 +127,8 @@ const RiskAnalysisPage = () => {
               value={riskData.overallRisk || "N/A"} 
               description={`Score: ${riskData.overallScore || 0}/100`}
               icon={
-                riskData.overallRisk === 'High' ? '🚨' :
-                riskData.overallRisk === 'Medium' ? '⚠️' : '✅'
+                riskData.overallRisk === 'High' ? <AlertTriangle size={24} /> :
+                riskData.overallRisk === 'Medium' ? <AlertCircle size={24} /> : <CheckCircle size={24} />
               }
               className={
                 riskData.overallRisk === 'High' ? styles.statHigh :
@@ -138,7 +139,7 @@ const RiskAnalysisPage = () => {
               title="Total Identified Risks" 
               value={(riskData.risks || []).length} 
               description={`${highRisks.length} High, ${mediumRisks.length} Medium, ${lowRisks.length} Low`}
-              icon="🔍"
+              icon={<Search size={24} />}
             />
           </div>
 

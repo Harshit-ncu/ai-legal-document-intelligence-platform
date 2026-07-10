@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useReducer } from 'react';
 
 // ── Initial State ─────────────────────────────────────────
-const initialState = {
+export const initialState = {
   uploadedFile: null,      // The original File object
   documentId: null,        // Server-side ID if applicable
   extractedText: null,     // The full text of the document
@@ -29,7 +29,7 @@ const ACTIONS = {
 };
 
 // ── Reducer ───────────────────────────────────────────────
-function documentReducer(state, action) {
+export function documentReducer(state, action) {
   switch (action.type) {
     case ACTIONS.SET_FILE:
       return {

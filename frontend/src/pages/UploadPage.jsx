@@ -21,6 +21,7 @@ import DropZone    from '../components/DropZone';
 import FileInfo    from '../components/FileInfo';
 import ProgressBar from '../components/ProgressBar';
 import { formatFileSize } from '../utils/fileHelpers';
+import { Scale, CheckCircle, AlertCircle, Search, FileText, Flag } from 'lucide-react';
 import styles from './UploadPage.module.css';
 
 const UploadPage = () => {
@@ -41,7 +42,9 @@ const UploadPage = () => {
     <main className={styles.page}>
       {/* ── Page Header ────────────────────────────────── */}
       <header className={styles.header}>
-        <div className={styles.logo} aria-hidden="true">⚖️</div>
+        <div className={styles.logo} aria-hidden="true">
+          <Scale size={40} />
+        </div>
         <h1 className={styles.title}>Legal Document Analyzer</h1>
         <p className={styles.subtitle}>
           Upload a contract or legal document to extract key clauses,
@@ -97,7 +100,9 @@ const UploadPage = () => {
         {/* ── Step 4: Success — show result ─────────────────────────── */}
         {uploadState === UPLOAD_STATE.SUCCESS && result && (
           <div className={styles.successPanel} role="status" aria-live="polite">
-            <div className={styles.successIcon} aria-hidden="true">✅</div>
+            <div className={styles.successIcon} aria-hidden="true">
+              <CheckCircle size={48} className={styles.successIconSvg} />
+            </div>
             <h2 className={styles.successTitle}>Upload Successful!</h2>
 
             <dl className={styles.resultGrid}>
@@ -157,7 +162,9 @@ const UploadPage = () => {
         {/* ── Error state ────────────────────────────────────────────── */}
         {uploadState === UPLOAD_STATE.ERROR && (
           <div className={styles.errorPanel} role="alert" aria-live="assertive">
-            <div className={styles.errorIcon} aria-hidden="true">⚠️</div>
+            <div className={styles.errorIcon} aria-hidden="true">
+              <AlertCircle size={48} className={styles.errorIconSvg} />
+            </div>
             <p className={styles.errorMessage}>{error}</p>
             <button
               type="button"
@@ -174,9 +181,9 @@ const UploadPage = () => {
 
       {/* ── Features preview (coming soon) ──────────────── */}
       <section className={styles.features} aria-label="Upcoming features">
-        <FeatureCard icon="🔍" title="Clause Extraction" desc="Identifies and categorizes key legal clauses automatically." />
-        <FeatureCard icon="📝" title="AI Summarization" desc="Generates a plain-English summary of complex legal text." />
-        <FeatureCard icon="🚩" title="Risk Flagging" desc="Highlights potentially unfavorable or unusual terms." />
+        <FeatureCard icon={<Search size={24} />} title="Clause Extraction" desc="Identifies and categorizes key legal clauses automatically." />
+        <FeatureCard icon={<FileText size={24} />} title="AI Summarization" desc="Generates a plain-English summary of complex legal text." />
+        <FeatureCard icon={<Flag size={24} />} title="Risk Flagging" desc="Highlights potentially unfavorable or unusual terms." />
       </section>
     </main>
   );

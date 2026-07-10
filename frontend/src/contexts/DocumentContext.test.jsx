@@ -3,7 +3,7 @@ import { documentReducer, initialState } from './DocumentContext';
 
 describe('DocumentContext Reducer', () => {
   it('should handle SET_UPLOADED_FILE', () => {
-    const action = { type: 'SET_UPLOADED_FILE', payload: { name: 'test.pdf' } };
+    const action = { type: 'SET_FILE', payload: { name: 'test.pdf' } };
     const state = documentReducer(initialState, action);
     expect(state.uploadedFile).toEqual({ name: 'test.pdf' });
   });
@@ -20,7 +20,7 @@ describe('DocumentContext Reducer', () => {
 
   it('should handle RESET_CONTEXT', () => {
     const dirtyState = { ...initialState, uploadedFile: { name: 'test.pdf' } };
-    const state = documentReducer(dirtyState, { type: 'RESET_CONTEXT' });
+    const state = documentReducer(dirtyState, { type: 'RESET' });
     expect(state).toEqual(initialState);
   });
 });

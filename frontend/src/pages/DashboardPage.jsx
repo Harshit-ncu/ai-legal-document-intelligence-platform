@@ -7,34 +7,35 @@ import { Button } from '../components/ui/Button';
 import { Card, CardHeader, CardTitle, CardContent } from '../components/ui/Card';
 import { StatCard } from '../components/ui/StatCard';
 import { Badge } from '../components/ui/Badge';
+import { FileText, Globe, Hash, File, AlertTriangle, Search, MessageSquare, FileDigit } from 'lucide-react';
 import styles from './DashboardPage.module.css';
 
 // ── Feature cards config ──────────────────────────────────
 const FEATURES = [
   {
     path: '/summary',
-    icon: '📝',
+    icon: <FileText size={24} />,
     title: 'AI Document Summary',
     description: 'Generate a plain-English executive summary of the full document.',
     badge: null,
   },
   {
     path: '/risk',
-    icon: '🚨',
+    icon: <AlertTriangle size={24} />,
     title: 'Legal Risk Analysis',
     description: 'Identify high, medium, and low severity risks and missing clauses.',
     badge: 'Gemini 2.5 Pro',
   },
   {
     path: '/clauses',
-    icon: '🔍',
+    icon: <Search size={24} />,
     title: 'Clause Intelligence',
     description: 'Get a deep breakdown of any clause with negotiation tips and red flags.',
     badge: null,
   },
   {
     path: '/chat',
-    icon: '💬',
+    icon: <MessageSquare size={24} />,
     title: 'AI Document Chat',
     description: 'Ask natural language questions. Answers are grounded strictly in the document.',
     badge: 'New',
@@ -82,25 +83,25 @@ const DashboardPage = () => {
               title="Document Type"
               value={documentType || 'Unknown'}
               description="Detected classification"
-              icon="📄"
+              icon={<FileDigit size={24} />}
             />
             <StatCard
               title="Language"
               value={language || 'Unknown'}
               description="Detected language"
-              icon="🌐"
+              icon={<Globe size={24} />}
             />
             <StatCard
               title="Characters"
               value={extractedText.length.toLocaleString()}
               description="Extracted text length"
-              icon="🔢"
+              icon={<Hash size={24} />}
             />
             <StatCard
               title="File"
               value={uploadedFile?.name ?? 'Uploaded'}
               description={uploadedFile ? `${(uploadedFile.size / 1024).toFixed(1)} KB` : ''}
-              icon="📁"
+              icon={<File size={24} />}
             />
           </div>
 
@@ -165,7 +166,7 @@ const DashboardPage = () => {
         </>
       ) : (
         <EmptyState
-          icon="📂"
+          icon={<File size={48} className={styles.emptyIcon} />}
           title="No Document Loaded"
           description="Upload a legal document to unlock AI-powered summary, risk analysis, clause intelligence, and Q&A."
           action={

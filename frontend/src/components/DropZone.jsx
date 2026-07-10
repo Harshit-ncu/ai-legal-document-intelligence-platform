@@ -12,8 +12,9 @@
 // and lets the parent (UploadPage) decide what to do.
 // ─────────────────────────────────────────────────────────
 
-import { useState, useRef, useCallback } from 'react';
+import { useRef, useCallback, useState } from 'react';
 import { ALLOWED_EXTENSIONS } from '../utils/fileHelpers';
+import { CloudUpload } from 'lucide-react';
 import styles from './DropZone.module.css';
 
 const DropZone = ({ onFileSelect, disabled }) => {
@@ -118,11 +119,7 @@ const DropZone = ({ onFileSelect, disabled }) => {
 
       {/* Upload icon */}
       <div className={styles.iconWrapper} aria-hidden="true">
-        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
-          <polyline points="17 8 12 3 7 8"/>
-          <line x1="12" y1="3" x2="12" y2="15"/>
-        </svg>
+        <CloudUpload size={48} strokeWidth={1.5} />
       </div>
 
       <div className={styles.textContent}>

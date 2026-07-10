@@ -19,11 +19,15 @@ export default defineConfig({
   plugins: [react()],
 
   test: {
-    environment: 'jsdom',
+    environment: 'happy-dom',
     setupFiles: './setupTests.js',
     globals: true,
-    pool: 'threads',
-    css: false
+    css: false,
+    server: {
+      deps: {
+        inline: ['@asamuzakjp/css-color', '@csstools/css-calc']
+      }
+    }
   },
   server: {
     port: 5173,

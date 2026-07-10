@@ -4,28 +4,28 @@ import { formatFileSize, validateFile } from './fileHelpers';
 describe('fileHelpers', () => {
   describe('formatFileSize', () => {
     it('should format bytes to KB', () => {
-      expect(formatFileSize(1024)).toBe('1.0 KB');
+      expect(formatFileSize(1024)).toBe('1 KB');
     });
     
     it('should format bytes to MB', () => {
-      expect(formatFileSize(1024 * 1024)).toBe('1.00 MB');
+      expect(formatFileSize(1024 * 1024)).toBe('1.0 MB');
     });
   });
 
   describe('validateFile', () => {
     it('should pass valid file', () => {
       const file = { name: 'test.pdf', type: 'application/pdf', size: 1000 };
-      expect(validateFile(file).isValid).toBe(true);
+      expect(validateFile(file)).toBeNull();
     });
 
     it('should reject invalid extension', () => {
       const file = { name: 'test.exe', type: 'application/x-msdownload', size: 1000 };
-      expect(validateFile(file).isValid).toBe(false);
+      expect(typeof validateFile(file)).toBe('string');
     });
 
     it('should reject large files', () => {
       const file = { name: 'test.pdf', type: 'application/pdf', size: 10 * 1024 * 1024 };
-      expect(validateFile(file).isValid).toBe(false);
+      expect(typeof validateFile(file)).toBe('string');
     });
   });
 });

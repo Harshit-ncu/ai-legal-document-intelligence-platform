@@ -8,6 +8,7 @@ import { Button } from '../components/ui/Button';
 import { Card, CardHeader, CardTitle, CardContent } from '../components/ui/Card';
 import { ErrorMessage } from '../components/ui/ErrorMessage';
 import { Skeleton } from '../components/ui/Skeleton';
+import { UploadCloud, Sparkles } from 'lucide-react';
 import styles from './SummaryPage.module.css';
 
 const SummaryPage = () => {
@@ -49,7 +50,7 @@ const SummaryPage = () => {
     return (
       <div className={styles.container}>
         <EmptyState 
-          icon="📤" 
+          icon={<UploadCloud size={48} />} 
           title="No Document Uploaded" 
           description="Upload a document before generating a summary." 
           action={
@@ -108,7 +109,7 @@ const SummaryPage = () => {
 
       {!isGenerating && !summaryData && !error && (
         <EmptyState 
-          icon="✨" 
+          icon={<Sparkles size={48} />} 
           title="Ready to Summarize" 
           description="Click the button above to analyze your document and generate a structured summary." 
         />

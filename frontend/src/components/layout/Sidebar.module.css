@@ -56,7 +56,8 @@
   color: var(--color-text-secondary);
   border-radius: 8px;
   font-weight: 500;
-  transition: all 0.2s ease;
+  border-left: 3px solid transparent;
+  transition: all var(--transition-fast);
 }
 
 .navLink:hover {
@@ -68,15 +69,23 @@
 .navLink.active {
   background: var(--color-sidebar-active);
   color: var(--color-accent);
+  border-left: 3px solid var(--color-accent);
 }
 
 .icon {
-  font-size: 1.25rem;
+  color: inherit;
+  transition: transform var(--transition-fast);
   display: flex;
   align-items: center;
   justify-content: center;
   width: 24px;
 }
+
+.navLink:hover .icon {
+  transform: scale(1.1);
+}
+
+
 
 .footer {
   padding: var(--space-4) var(--space-5);

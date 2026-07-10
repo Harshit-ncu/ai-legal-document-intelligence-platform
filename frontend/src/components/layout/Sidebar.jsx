@@ -1,22 +1,23 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
+import { LayoutDashboard, UploadCloud, FileText, AlertTriangle, Search, Bot, Settings, Scale } from 'lucide-react';
 import styles from './Sidebar.module.css';
 
 const navItems = [
-  { path: '/', label: 'Dashboard', icon: '📊' },
-  { path: '/upload', label: 'Upload Document', icon: '📤' },
-  { path: '/summary', label: 'Executive Summary', icon: '📝' },
-  { path: '/risk', label: 'Risk Analysis', icon: '🚩' },
-  { path: '/clauses', label: 'Clause Intelligence', icon: '🔍' },
-  { path: '/chat', label: 'AI Contract Assistant', icon: '🤖' },
-  { path: '/settings', label: 'Settings', icon: '⚙️' },
+  { path: '/', label: 'Dashboard', icon: LayoutDashboard },
+  { path: '/upload', label: 'Upload Document', icon: UploadCloud },
+  { path: '/summary', label: 'Executive Summary', icon: FileText },
+  { path: '/risk', label: 'Risk Analysis', icon: AlertTriangle },
+  { path: '/clauses', label: 'Clause Intelligence', icon: Search },
+  { path: '/chat', label: 'AI Contract Assistant', icon: Bot },
+  { path: '/settings', label: 'Settings', icon: Settings },
 ];
 
 export const Sidebar = () => {
   return (
     <aside className={styles.sidebar}>
       <div className={styles.logo}>
-        <span className={styles.logoIcon} aria-hidden="true">⚖️</span>
+        <Scale className={styles.logoIcon} aria-hidden="true" size={28} />
         <span className={styles.logoText}>Legal AI</span>
       </div>
       
@@ -30,7 +31,9 @@ export const Sidebar = () => {
                   `${styles.navLink} ${isActive ? styles.active : ''}`
                 }
               >
-                <span className={styles.icon} aria-hidden="true">{item.icon}</span>
+                <span className={styles.icon} aria-hidden="true">
+                  <item.icon size={20} />
+                </span>
                 <span className={styles.label}>{item.label}</span>
               </NavLink>
             </li>

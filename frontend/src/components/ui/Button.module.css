@@ -8,8 +8,12 @@
   border-radius: 6px;
   border: 1px solid transparent;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all var(--transition-fast);
   white-space: nowrap;
+}
+
+.button:active:not(:disabled) {
+  transform: scale(0.97);
 }
 
 .button:disabled {
@@ -19,12 +23,13 @@
 
 /* Variants */
 .primary {
-  background: var(--color-accent);
+  background: linear-gradient(135deg, var(--color-accent) 0%, var(--color-accent-hover) 100%);
   color: #ffffff;
+  box-shadow: var(--shadow-sm);
 }
 .primary:hover:not(:disabled) {
-  background: var(--color-accent-hover);
   box-shadow: var(--shadow-glow);
+  filter: brightness(1.1);
 }
 
 .secondary {

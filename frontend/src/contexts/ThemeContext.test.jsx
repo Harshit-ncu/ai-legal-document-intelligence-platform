@@ -1,12 +1,12 @@
 import { render, screen, act } from '@testing-library/react';
 import { describe, it, expect } from 'vitest';
-import { ThemeProvider, useThemeContext } from './ThemeContext';
+import { ThemeProvider, useTheme } from './ThemeContext';
 
 const TestComponent = () => {
-  const { isDarkMode, toggleTheme } = useThemeContext();
+  const { theme, toggleTheme } = useTheme();
   return (
     <div>
-      <span data-testid="theme">{isDarkMode ? 'dark' : 'light'}</span>
+      <span data-testid="theme">{theme}</span>
       <button onClick={toggleTheme}>Toggle</button>
     </div>
   );

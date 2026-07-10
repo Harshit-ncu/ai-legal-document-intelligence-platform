@@ -9,7 +9,7 @@ vi.mock('../services/api');
 describe('useFileUpload', () => {
   it('should initialize with IDLE state', () => {
     const { result } = renderHook(() => useFileUpload(), { wrapper: DocumentProvider });
-    expect(result.current.uploadState).toBe('IDLE');
+    expect(result.current.uploadState).toBe('idle');
   });
 
   it('should transition to SELECTED when file is selected', () => {
@@ -19,7 +19,7 @@ describe('useFileUpload', () => {
       result.current.selectFile({ name: 'test.pdf', type: 'application/pdf', size: 1000 });
     });
     
-    expect(result.current.uploadState).toBe('SELECTED');
+    expect(result.current.uploadState).toBe('selected');
     expect(result.current.selectedFile.name).toBe('test.pdf');
   });
 });

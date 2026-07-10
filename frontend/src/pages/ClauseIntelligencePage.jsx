@@ -10,6 +10,7 @@ import { ErrorMessage } from '../components/ui/ErrorMessage';
 import { Skeleton } from '../components/ui/Skeleton';
 import { Badge } from '../components/ui/Badge';
 import { StatCard } from '../components/ui/StatCard';
+import { UploadCloud, Search, ClipboardList, Scale, Bell, Lightbulb } from 'lucide-react';
 import styles from './ClauseIntelligencePage.module.css';
 
 // Utility: maps riskLevel string to Badge variant
@@ -69,7 +70,7 @@ const ClauseIntelligencePage = () => {
     return (
       <div className={styles.container}>
         <EmptyState
-          icon="📤"
+          icon={<UploadCloud size={48} />}
           title="No Document Uploaded"
           description="Upload a document before analyzing clauses."
           action={
@@ -130,7 +131,7 @@ const ClauseIntelligencePage = () => {
       {/* ── Pre-analysis idle state ── */}
       {!isGenerating && !clauseData && !error && (
         <EmptyState
-          icon="🔍"
+          icon={<Search size={48} />}
           title="Ready for Clause Analysis"
           description="Click the button above to identify, explain, and evaluate the key legal clauses in your document."
         />
@@ -146,16 +147,13 @@ const ClauseIntelligencePage = () => {
               title="Clause Title"
               value={clauseData.title || 'Analyzed'}
               description="Identified by Gemini AI"
-              icon="📋"
+              icon={<ClipboardList size={24} />}
             />
             <StatCard
               title="Risk Level"
-              value={clauseData.riskLevel || 'N/A'}
-              description={`Confidence: ${clauseData.confidence ?? '—'}/100`}
-              icon={
-                clauseData.riskLevel === 'High' ? '🚨' :
-                clauseData.riskLevel === 'Medium' ? '⚠️' : '✅'
-              }
+              value={(clauseData.riskLevel || 'Unknown').toUpperCase()}
+              description="Determined by terms"
+              icon={<Scale size={24} />}
               className={
                 clauseData.riskLevel === 'High' ? styles.statHigh :
                 clauseData.riskLevel === 'Medium' ? styles.statMedium : styles.statLow
@@ -165,7 +163,7 @@ const ClauseIntelligencePage = () => {
               title="Suggestions"
               value={(clauseData.suggestions || []).length}
               description={`${(clauseData.redFlags || []).length} red flag(s) found`}
-              icon="💡"
+              icon={<Lightbulb size={24} />}
             />
           </div>
 

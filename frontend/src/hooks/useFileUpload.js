@@ -8,6 +8,7 @@ import { useCallback, useState } from 'react';
 import { uploadDocument } from '../services/api';
 import { validateFile } from '../utils/fileHelpers';
 import { useDocumentContext } from '../contexts/DocumentContext';
+import { toast } from 'react-hot-toast';
 
 export const UPLOAD_STATE = {
   IDLE:       'idle',
@@ -36,6 +37,7 @@ const useFileUpload = () => {
     const validationError = validateFile(file);
     if (validationError) {
       setError(validationError);
+      toast.error(validationError);
       return;
     }
 
@@ -54,6 +56,7 @@ const useFileUpload = () => {
 
       setResult(data);
       setUploadSuccess();
+      toast.success('Document uploaded & analyzed successfully!');
       
       // Also set the extraction data into global context
       setExtractionData({
@@ -65,6 +68,7 @@ const useFileUpload = () => {
     } catch (err) {
       const message = err.response?.data?.error || 'Upload failed. Please try again.';
       setError(message);
+      toast.error(message);
     }
   }, [state.uploadedFile, setUploadProgress, setUploadSuccess, setExtractionData, setError]);
 
