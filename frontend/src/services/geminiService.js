@@ -35,9 +35,11 @@ export const analyzeRisk = async (documentText, documentType) => {
  * @param {string} documentType 
  */
 export const analyzeClause = async (clause, documentType) => {
-  // Placeholder - logic to be implemented later
-  console.log("analyzeClause called", { documentType });
-  return null;
+  const response = await axios.post(`${AI_API_BASE}/clause-intelligence`, {
+    clause: clause,
+    documentType: documentType || 'Unknown'
+  });
+  return response.data;
 };
 
 /**
