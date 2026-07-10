@@ -140,7 +140,7 @@ const UploadPage = () => {
             </dl>
 
             <p className={styles.nextHint}>
-              🚀 AI analysis will be available in the next module.
+              🚀 Your document is ready for AI analysis.
             </p>
 
             <button
@@ -188,7 +188,7 @@ const FeatureCard = ({ icon, title, desc }) => (
     <span className={styles.featureIcon} aria-hidden="true">{icon}</span>
     <h3 className={styles.featureTitle}>{title}</h3>
     <p className={styles.featureDesc}>{desc}</p>
-    <span className={styles.comingSoon}>Coming soon</span>
+    <span className={styles.comingSoon}>Available Now</span>
   </article>
 );
 

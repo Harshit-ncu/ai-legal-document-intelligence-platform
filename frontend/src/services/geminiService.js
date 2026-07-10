@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 // Direct connection to the FastAPI AI service which has CORS enabled for frontend
-const AI_API_BASE = 'http://localhost:8000/gemini';
+const AI_API_BASE = import.meta.env.VITE_AI_SERVICE_URL || 'http://localhost:8000/gemini';
 
 /**
  * Request an executive summary from the AI service.
