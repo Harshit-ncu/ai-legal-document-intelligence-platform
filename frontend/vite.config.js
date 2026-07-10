@@ -18,6 +18,13 @@ import react from '@vitejs/plugin-react';
 export default defineConfig({
   plugins: [react()],
 
+  test: {
+    environment: 'jsdom',
+    setupFiles: './setupTests.js',
+    globals: true,
+    pool: 'threads',
+    css: false
+  },
   server: {
     port: 5173,
     // Proxy: any request starting with /api is forwarded to Express
