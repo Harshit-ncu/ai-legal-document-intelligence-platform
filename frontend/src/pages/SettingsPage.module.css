@@ -1,0 +1,126 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+  max-width: 760px;
+}
+
+/* ── Individual settings cards ─────────────────────────── */
+.settingsCard {
+  background: var(--color-bg-surface);
+}
+
+/* ── Row layout for a single setting ──────────────────── */
+.settingRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--space-4);
+  flex-wrap: wrap;
+}
+
+.settingInfo {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.settingLabel {
+  font-weight: 600;
+  color: var(--color-text-primary);
+  font-size: 1rem;
+}
+
+.settingDesc {
+  font-size: 0.88rem;
+  color: var(--color-text-secondary);
+}
+
+.settingControl {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  flex-shrink: 0;
+}
+
+/* ── Key / value info table ────────────────────────────── */
+.infoTable {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.infoRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--space-3) 0;
+  border-bottom: 1px solid var(--color-border);
+  gap: var(--space-4);
+}
+
+.infoRow:last-child {
+  border-bottom: none;
+}
+
+.infoLabel {
+  font-size: 0.9rem;
+  color: var(--color-text-secondary);
+  font-weight: 500;
+  flex-shrink: 0;
+}
+
+.infoValue {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: 0.9rem;
+  color: var(--color-text-primary);
+  font-weight: 500;
+  text-align: right;
+}
+
+.infoBadge {
+  flex-shrink: 0;
+}
+
+/* ── Capabilities grid ─────────────────────────────────── */
+.capabilityGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--space-3);
+}
+
+@media (max-width: 480px) {
+  .capabilityGrid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.capabilityItem {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-3);
+  background: var(--color-bg-elevated);
+  border-radius: 8px;
+  border: 1px solid var(--color-border);
+}
+
+.capabilityIcon {
+  font-size: 1.4rem;
+  line-height: 1;
+  flex-shrink: 0;
+}
+
+.capabilityBody {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.capabilityTitle {
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: var(--color-text-primary);
+}

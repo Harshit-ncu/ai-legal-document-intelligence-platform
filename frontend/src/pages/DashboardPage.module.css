@@ -1,0 +1,146 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+}
+
+/* ── Stats row ─────────────────────────────────────────── */
+.statsGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--space-4);
+}
+
+@media (min-width: 1024px) {
+  .statsGrid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+/* ── Pipeline status ───────────────────────────────────── */
+.statusCard {
+  background: var(--color-bg-surface);
+}
+
+.pipelineGrid {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  flex-wrap: wrap;
+}
+
+.pipelineItem {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-2);
+  min-width: 120px;
+}
+
+.pipelineLabel {
+  font-size: 0.85rem;
+  color: var(--color-text-secondary);
+  font-weight: 500;
+}
+
+.pipelineDivider {
+  font-size: 1.5rem;
+  color: var(--color-text-secondary);
+  flex-shrink: 0;
+}
+
+/* ── Section heading ───────────────────────────────────── */
+.sectionHeading {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--color-text-primary);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  margin-bottom: calc(-1 * var(--space-2));
+}
+
+/* ── Feature cards ─────────────────────────────────────── */
+.featuresGrid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-4);
+}
+
+@media (min-width: 768px) {
+  .featuresGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+.featureCard {
+  cursor: pointer;
+  transition: transform 0.15s, box-shadow 0.15s, border-color 0.15s;
+  border: 1px solid var(--color-border);
+}
+
+.featureCard:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.15);
+  border-color: var(--color-accent);
+}
+
+.featureCard:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+}
+
+.featureContent {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+}
+
+.featureIcon {
+  font-size: 2rem;
+  line-height: 1;
+  flex-shrink: 0;
+}
+
+.featureBody {
+  flex: 1;
+  min-width: 0;
+}
+
+.featureTitleRow {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin-bottom: var(--space-1);
+  flex-wrap: wrap;
+}
+
+.featureTitle {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--color-text-primary);
+}
+
+.featureDesc {
+  margin: 0;
+  font-size: 0.88rem;
+  color: var(--color-text-secondary);
+  line-height: 1.5;
+}
+
+.featureArrow {
+  font-size: 1.8rem;
+  color: var(--color-text-secondary);
+  flex-shrink: 0;
+  transition: color 0.15s;
+}
+
+.featureCard:hover .featureArrow {
+  color: var(--color-accent);
+}
+
+/* ── Reset row ─────────────────────────────────────────── */
+.resetRow {
+  display: flex;
+  justify-content: flex-start;
+}
