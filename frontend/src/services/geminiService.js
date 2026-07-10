@@ -49,7 +49,10 @@ export const analyzeClause = async (clause, documentType) => {
  * @param {string} question 
  */
 export const sendChatMessage = async (documentText, documentType, question) => {
-  // Placeholder - logic to be implemented later
-  console.log("sendChatMessage called", { documentType, question });
-  return null;
+  const response = await axios.post(`${AI_API_BASE}/chat`, {
+    documentText,
+    documentType: documentType || 'Unknown',
+    question,
+  });
+  return response.data;
 };

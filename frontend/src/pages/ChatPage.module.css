@@ -1,0 +1,272 @@
+/* ChatPage.module.css
+   Page-specific styles for the AI Document Chat interface.
+   All generic tokens (--space-*, --color-*) are from the global design system.
+*/
+
+/* ── Page shell ─────────────────────────────────────────── */
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+  height: calc(100vh - 120px); /* fill available viewport under the TopNav */
+}
+
+/* ── Chat window card ────────────────────────────────────── */
+.chatCard {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;          /* allow flex child to shrink below content size */
+  background: var(--color-bg-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+/* ── Scrollable message area ─────────────────────────────── */
+.messageArea {
+  flex: 1;
+  overflow-y: auto;
+  padding: var(--space-5);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  scroll-behavior: smooth;
+}
+
+/* ── Empty / welcome state inside the window ─────────────── */
+.chatWelcome {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+  gap: var(--space-3);
+  color: var(--color-text-secondary);
+  text-align: center;
+  padding: var(--space-8);
+}
+
+.chatWelcomeIcon {
+  font-size: 3rem;
+  line-height: 1;
+}
+
+.chatWelcomeTitle {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--color-text-primary);
+}
+
+.chatWelcomeBody {
+  font-size: 0.95rem;
+  max-width: 380px;
+}
+
+/* ── Individual message bubbles ──────────────────────────── */
+.messageRow {
+  display: flex;
+  gap: var(--space-3);
+  align-items: flex-start;
+}
+
+.messageRow.user {
+  flex-direction: row-reverse;
+}
+
+.avatar {
+  width: 2rem;
+  height: 2rem;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1rem;
+  flex-shrink: 0;
+  background: var(--color-bg-elevated);
+  border: 1px solid var(--color-border);
+}
+
+.messageRow.user .avatar {
+  background: var(--color-accent);
+  color: #fff;
+  border-color: var(--color-accent);
+}
+
+.bubble {
+  max-width: 75%;
+  padding: var(--space-3) var(--space-4);
+  border-radius: 12px;
+  font-size: 0.97rem;
+  line-height: 1.6;
+  word-break: break-word;
+}
+
+/* User bubble */
+.messageRow.user .bubble {
+  background: var(--color-accent);
+  color: #fff;
+  border-bottom-right-radius: 4px;
+}
+
+/* AI bubble */
+.messageRow.ai .bubble {
+  background: var(--color-bg-elevated);
+  color: var(--color-text-primary);
+  border: 1px solid var(--color-border);
+  border-bottom-left-radius: 4px;
+}
+
+/* ── AI answer text ──────────────────────────────────────── */
+.answerText {
+  margin: 0;
+}
+
+/* ── Collapsible detail sections under AI bubble ─────────── */
+.aiExtras {
+  margin-top: var(--space-3);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.extraSection {
+  background: var(--color-bg-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  padding: var(--space-3);
+  font-size: 0.88rem;
+  color: var(--color-text-secondary);
+}
+
+.extraSection strong {
+  display: block;
+  color: var(--color-text-primary);
+  margin-bottom: var(--space-1);
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.extraList {
+  margin: 0;
+  padding-left: var(--space-4);
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.sourceRef {
+  background: var(--color-bg-elevated);
+  border-radius: 6px;
+  padding: var(--space-2) var(--space-3);
+  margin-bottom: var(--space-2);
+  border-left: 3px solid var(--color-accent);
+}
+
+.sourceRef:last-child { margin-bottom: 0; }
+
+.sourceRefTitle {
+  font-weight: 600;
+  color: var(--color-text-primary);
+  font-size: 0.85rem;
+}
+
+.sourceRefExcerpt {
+  font-style: italic;
+  color: var(--color-text-secondary);
+  font-size: 0.83rem;
+  margin-top: 2px;
+}
+
+/* ── Follow-up chip buttons ──────────────────────────────── */
+.followUps {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  margin-top: var(--space-2);
+}
+
+.followUpChip {
+  background: transparent;
+  border: 1px solid var(--color-accent);
+  color: var(--color-accent);
+  border-radius: 20px;
+  padding: 4px 12px;
+  font-size: 0.82rem;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+  white-space: nowrap;
+  max-width: 260px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.followUpChip:hover {
+  background: var(--color-accent);
+  color: #fff;
+}
+
+/* ── Thinking indicator ──────────────────────────────────── */
+.thinkingRow {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.thinkingBubble {
+  background: var(--color-bg-elevated);
+  border: 1px solid var(--color-border);
+  border-radius: 12px;
+  border-bottom-left-radius: 4px;
+  padding: var(--space-3) var(--space-4);
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  color: var(--color-text-secondary);
+  font-size: 0.9rem;
+}
+
+/* ── Confidence badge helper ─────────────────────────────── */
+.confidenceLabel {
+  display: inline-block;
+  font-size: 0.78rem;
+  color: var(--color-text-secondary);
+  margin-top: var(--space-1);
+}
+
+/* ── Input area ──────────────────────────────────────────── */
+.inputArea {
+  border-top: 1px solid var(--color-border);
+  padding: var(--space-4);
+  display: flex;
+  gap: var(--space-3);
+  align-items: flex-end;
+  background: var(--color-bg-surface);
+}
+
+.textarea {
+  flex: 1;
+  resize: none;
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  padding: var(--space-3);
+  font-size: 0.97rem;
+  font-family: inherit;
+  line-height: 1.5;
+  background: var(--color-bg-base);
+  color: var(--color-text-primary);
+  outline: none;
+  transition: border-color 0.2s;
+  min-height: 48px;
+  max-height: 160px;
+}
+
+.textarea:focus {
+  border-color: var(--color-accent);
+}
+
+.textarea:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
