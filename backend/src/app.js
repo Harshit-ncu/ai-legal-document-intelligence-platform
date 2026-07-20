@@ -19,8 +19,21 @@ const app = express();
 
 // ── Middleware ────────────────────────────────────────────
 
-// CORS: allow requests from the React dev server (port 5173)
-app.use(cors({ origin: process.env.FRONTEND_URL || 'http://localhost:5173' }));
+// CORS: allow requests from React dev server and production Vercel frontend
+const defaultOrigins = [
+  'http://localhost:5173',
+  'https://ai-legal-document-intelligence-plat-xi.vercel.app'
+];
+const allowedOrigins = process.env.FRONTEND_URL 
+  ? process.env.FRONTEND_URL.split(',') 
+  : defaultOrigins;
+
+const corsOptions = {
+  origin: allowedOrigins,
+  credentials: true,
+};
+
+app.use(cors(corsOptions));
 
 // Parse JSON request bodies
 app.use(express.json());
