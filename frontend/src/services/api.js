@@ -14,9 +14,7 @@
 
 import axios from 'axios';
 
-// Base URL: Vite's proxy (vite.config.js) forwards /api → Express.
-// In production you'd set this to your deployed backend URL.
-const API_BASE = '/api';
+const API_BASE = import.meta.env.VITE_API_URL || '/api';
 
 /**
  * Upload a document file to the backend.
