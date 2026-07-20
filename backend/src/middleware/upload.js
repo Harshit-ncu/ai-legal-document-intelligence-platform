@@ -14,6 +14,12 @@
 const multer  = require('multer');
 const path    = require('path');
 const crypto  = require('crypto'); // Built-in Node module — no install needed
+const fs      = require('fs');
+
+const uploadDir = path.join(__dirname, '../../uploads');
+if (!fs.existsSync(uploadDir)) {
+  fs.mkdirSync(uploadDir, { recursive: true });
+}
 
 // ── 1. Where and how to store uploaded files ──────────────
 const storage = multer.diskStorage({
