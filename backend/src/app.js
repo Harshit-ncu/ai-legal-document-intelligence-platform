@@ -24,9 +24,14 @@ const defaultOrigins = [
   'http://localhost:5173',
   'https://ai-legal-document-intelligence-plat-xi.vercel.app'
 ];
-const allowedOrigins = process.env.FRONTEND_URL 
-  ? process.env.FRONTEND_URL.split(',') 
-  : defaultOrigins;
+const envOrigins = process.env.FRONTEND_URL ? process.env.FRONTEND_URL.split(',') : [];
+
+// Combine both arrays and remove duplicates
+const allowedOrigins = [...new Set([...defaultOrigins, ...envOrigins])];
+
+if (process.env.NODE_ENV !== 'production') {
+  console.log('CORS allowedOrigins:', allowedOrigins);
+}
 
 const corsOptions = {
   origin: allowedOrigins,
