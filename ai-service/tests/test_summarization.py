@@ -30,7 +30,7 @@
 #     18. Propagates RuntimeError from gemini_service (rate limit).
 #     19. Propagates RuntimeError from gemini_service (service unavailable).
 #     20. Raises ValueError when Gemini returns non-JSON text.
-#     21. Returns correct modelUsed field (gemini-2.5-pro).
+#     21. Returns correct modelUsed field (llama-3.3-70b-versatile).
 #     22. Response dict contains processingTimeMs > 0.
 #     23. Handles Gemini response wrapped in markdown code fences.
 #     24. Uses default values when Gemini omits an optional field.
@@ -252,7 +252,7 @@ class TestSummarizeDocument:
             result = summarize_document(VALID_NDA_TEXT, "NDA")
 
         assert result["modelUsed"] == SUMMARIZATION_MODEL
-        assert result["modelUsed"] == "gemini-2.5-pro"
+        assert result["modelUsed"] == "llama-3.3-70b-versatile"
 
     def test_processing_time_is_positive(self):
         raw_json = _make_mock_response(VALID_GEMINI_JSON)
@@ -305,7 +305,7 @@ class TestSummarizeEndpoint:
         assert "risks" in data
         assert "suggestedNextActions" in data
         assert "processingTimeMs" in data
-        assert data["modelUsed"] == "gemini-2.5-pro"
+        assert data["modelUsed"] == "llama-3.3-70b-versatile"
 
     def test_returns_422_for_text_too_short(self):
         # Pydantic's min_length=50 validation will reject it at the request level
