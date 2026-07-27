@@ -8,12 +8,12 @@ from pydantic import BaseModel, Field
 
 # ── Nested models ──────────────────────────────────────────
 
-class ClauseSuggestion(BaseModel):
-    """A prioritized actionable recommendation based on the clause analysis."""
-    priority: str = Field(..., description="Priority level: Critical, High, Medium, or Low")
-    title: str = Field(..., description="Short title of the recommendation")
-    reason: str = Field(..., description="Explanation of why this action is necessary")
-    recommendedAction: str = Field(..., description="Actionable step to mitigate risk or improve wording")
+class SuggestionItem(BaseModel):
+    """A prioritized recommendation for improving or handling the clause."""
+    priority: str = Field(..., description="Critical, High, Medium, or Low")
+    title: str = Field(..., description="Short title")
+    reason: str = Field(..., description="Reason for the suggestion")
+    recommendedAction: str = Field(default="", description="Recommended action")
 
 
 # ── Request model ──────────────────────────────────────────
@@ -69,7 +69,7 @@ class ClauseIntelligenceResponse(BaseModel):
     importantPoints: list[str] = Field(
         ..., description="Key takeaways from the clause"
     )
-    suggestions: list[ClauseSuggestion] = Field(
+    suggestions: list[SuggestionItem] = Field(
         ..., description="Prioritized recommendations for improving or handling the clause"
     )
     confidence: int = Field(

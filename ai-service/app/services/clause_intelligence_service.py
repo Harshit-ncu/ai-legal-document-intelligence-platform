@@ -34,6 +34,40 @@ CLAUSE_MODEL = "llama-3.3-70b-versatile"
 MIN_TEXT_LENGTH = 10
 
 
+def _normalise_item(item) -> str:
+    """Coerce a single list element to a plain string.
+
+    Handles the known dict shapes that the LLM may return and falls back
+    to ``json.dumps`` for any unrecognised dictionary.
+    """
+    if isinstance(item, str):
+        return item
+
+    if isinstance(item, dict):
+        # {title, description} -> "Title: description"
+        if "title" in item and "description" in item:
+            return f"{item['title']}: {item['description']}"
+        # {severity, description} -> "[Severity] description"
+        if "severity" in item and "description" in item:
+            return f"[{item['severity']}] {item['description']}"
+        # {party, obligation} -> "Party: obligation"
+        if "party" in item and "obligation" in item:
+            return f"{item['party']}: {item['obligation']}"
+        # {issue, severity} -> "[Severity] issue"
+        if "issue" in item and "severity" in item:
+            return f"[{item['severity']}] {item['issue']}"
+        # Unknown dict shape — serialise so nothing is silently lost
+        return json.dumps(item)
+
+    # Last resort for any other type
+    return str(item)
+
+
+def _normalise_array(items: list) -> list[str]:
+    """Normalise every element of *items* to a plain string."""
+    return [_normalise_item(item) for item in items]
+
+
 def _parse_gemini_json(raw_text: str) -> dict:
     """Extract and parse the JSON object from Gemini's raw response text."""
     text = raw_text.strip()
@@ -99,6 +133,25 @@ def _validate_structure(data: dict) -> dict:
             logger.warning("Gemini response missing or invalid list field '%s'. Using default.", field)
             data[field] = default
 
+    # Ensure suggestions are properly formatted objects
+    valid_suggestions = []
+    for s in data["suggestions"]:
+        if isinstance(s, dict):
+            valid_suggestions.append({
+                "priority": s.get("priority", "Medium"),
+                "title": s.get("title", "Suggestion"),
+                "reason": s.get("reason", "No reason provided."),
+                "recommendedAction": s.get("recommendedAction", "")
+            })
+        elif isinstance(s, str):
+            valid_suggestions.append({
+                "priority": "Medium",
+                "title": "Suggestion",
+                "reason": s,
+                "recommendedAction": ""
+            })
+    data["suggestions"] = valid_suggestions
+
     return data
 
 
@@ -158,8 +211,8 @@ def analyze_clause_intelligence(text: str, document_type: str = "Unknown") -> di
         "industryBestPractice":       validated["industryBestPractice"],
         "negotiationTip":             validated["negotiationTip"],
         "suggestedReplacementClause": validated["suggestedReplacementClause"],
-        "redFlags":                   validated["redFlags"],
-        "importantPoints":            validated["importantPoints"],
+        "redFlags":                   _normalise_array(validated["redFlags"]),
+        "importantPoints":            _normalise_array(validated["importantPoints"]),
         "suggestions":                validated["suggestions"],
         "confidence":                 validated["confidence"],
         "processingTimeMs":           elapsed_ms,
