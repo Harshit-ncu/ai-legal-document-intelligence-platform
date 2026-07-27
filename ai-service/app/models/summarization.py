@@ -7,29 +7,17 @@
 #   the intelligence response: it contains AI-generated structured
 #   content (arrays, nested objects) rather than computed metrics.
 #   Keeping them in separate files preserves single-responsibility.
+#
+# NOTE ON ARRAY TYPES:
+#   All list fields use list[str] because the summarization service
+#   normalises every array element to a plain string before returning.
+#   The LLM may return objects ({title, description}, {party, obligation},
+#   {severity, description}) — these are flattened to human-readable
+#   strings in summarization_service._normalise_array() so the React
+#   frontend always receives string arrays.
 # ─────────────────────────────────────────────────────────
 
 from pydantic import BaseModel, Field
-
-
-# ── Nested models ──────────────────────────────────────────
-
-class ImportantClause(BaseModel):
-    """A significant clause identified in the document."""
-    title: str = Field(..., description="Short name for the clause (e.g. 'Termination Clause')")
-    description: str = Field(..., description="Plain-English explanation of what the clause means")
-
-
-class Obligation(BaseModel):
-    """A specific obligation placed on a named party."""
-    party: str = Field(..., description="The party who has this obligation (e.g. 'Recipient')")
-    obligation: str = Field(..., description="Plain-English description of the obligation")
-
-
-class Risk(BaseModel):
-    """A potential risk or concern identified in the document."""
-    severity: str = Field(..., description="Risk level: Low, Medium, or High")
-    description: str = Field(..., description="Plain-English description of the risk")
 
 
 # ── Request model ──────────────────────────────────────────
@@ -60,24 +48,27 @@ class SummarizeResponse(BaseModel):
 
     All six analysis fields are always present. Fields that cannot be
     determined from the document text default to a descriptive string.
+
+    All list fields contain plain strings — any object arrays returned
+    by the LLM are normalised to strings in the service layer.
     """
     success: bool
 
-    # AI-generated structured fields
+    # AI-generated structured fields — all arrays are list[str]
     executiveSummary: str = Field(
         ..., description="2–4 sentence plain-English summary for executives."
     )
     keyPoints: list[str] = Field(
         ..., description="3–8 bullet-point takeaways."
     )
-    importantClauses: list[ImportantClause] = Field(
-        ..., description="Significant clauses with plain-English explanations."
+    importantClauses: list[str] = Field(
+        ..., description="Significant clauses as readable strings."
     )
-    obligations: list[Obligation] = Field(
-        ..., description="Party-specific obligations."
+    obligations: list[str] = Field(
+        ..., description="Party-specific obligations as readable strings."
     )
-    risks: list[Risk] = Field(
-        ..., description="Identified risks with severity ratings."
+    risks: list[str] = Field(
+        ..., description="Identified risks as readable strings."
     )
     suggestedNextActions: list[str] = Field(
         ..., description="2–5 recommended actions."
@@ -88,5 +79,5 @@ class SummarizeResponse(BaseModel):
         ..., description="Total time taken to generate the summary in milliseconds."
     )
     modelUsed: str = Field(
-        ..., description="The Gemini model that produced this summary."
+        ..., description="The model that produced this summary."
     )
