@@ -81,23 +81,64 @@ def _parse_gemini_json(raw_text: str) -> dict:
         ) from exc
 
 
+def _normalise_array(items: list) -> list[str]:
+    """
+    Ensure every element of an array is a plain string.
+
+    Groq (and some Gemini responses) may return arrays of objects instead
+    of arrays of strings.  Convert common object shapes to readable strings
+    so the React frontend always receives str[], never object[].
+
+    Handled shapes:
+      importantClauses: {title, description}  → "Title: description"
+      obligations:      {party, obligation}   → "Party A: obligation text"
+      risks:            {severity, description} → "[High] description"
+      keyPoints:        {point} or {text}     → value of that field
+      fallback:         any other dict        → JSON string
+    """
+    result = []
+    for item in items:
+        if isinstance(item, str):
+            result.append(item)
+        elif isinstance(item, dict):
+            # importantClauses shape
+            if "title" in item and "description" in item:
+                result.append(f"{item['title']}: {item['description']}")
+            # obligations shape
+            elif "party" in item and "obligation" in item:
+                result.append(f"{item['party']}: {item['obligation']}")
+            # risks shape
+            elif "severity" in item and "description" in item:
+                result.append(f"[{item['severity']}] {item['description']}")
+            # generic single-value dicts
+            elif len(item) == 1:
+                result.append(str(next(iter(item.values()))))
+            else:
+                result.append(json.dumps(item))
+        else:
+            result.append(str(item))
+    return result
+
+
 def _validate_structure(data: dict) -> dict:
     """
     Validate that all required fields are present in the parsed JSON.
     Fills missing fields with safe defaults so the response always has the right shape.
+    Also normalises any object-array fields to plain string arrays.
 
     Args:
         data: The parsed dict from _parse_gemini_json().
 
     Returns:
-        The dict with all required fields guaranteed to be present.
+        The dict with all required fields guaranteed to be present and
+        all array fields normalised to list[str].
     """
     defaults = {
         "executiveSummary": "Unable to determine.",
         "keyPoints": ["Unable to determine."],
-        "importantClauses": [{"title": "Unable to determine", "description": "Unable to determine."}],
-        "obligations": [{"party": "Unable to determine", "obligation": "Unable to determine."}],
-        "risks": [{"severity": "Low", "description": "Unable to determine."}],
+        "importantClauses": ["Unable to determine."],
+        "obligations": ["Unable to determine."],
+        "risks": ["Unable to determine."],
         "suggestedNextActions": ["Unable to determine."],
     }
 
@@ -105,6 +146,12 @@ def _validate_structure(data: dict) -> dict:
         if field not in data or not data[field]:
             logger.warning("Gemini response missing field '%s'. Using default.", field)
             data[field] = default
+
+    # Normalise all list fields to plain strings so the React frontend
+    # never receives object[] where it expects string[].
+    for field in ("keyPoints", "importantClauses", "obligations", "risks", "suggestedNextActions"):
+        if isinstance(data.get(field), list):
+            data[field] = _normalise_array(data[field])
 
     return data
 
