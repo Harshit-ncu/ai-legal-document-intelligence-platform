@@ -37,7 +37,8 @@ if not logger.handlers:
 
 # ── Constants ─────────────────────────────────────────────
 # Gemini 2.5 Pro is the single authoritative model for all AI features.
-SUMMARIZATION_MODEL = "gemini-2.5-pro"
+SUMMARIZATION_MODEL = "llama-3.3-70b-versatile"
+
 
 # Minimum meaningful text length. Anything shorter cannot be reliably summarized.
 MIN_TEXT_LENGTH = 50

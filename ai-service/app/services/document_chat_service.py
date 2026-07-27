@@ -29,7 +29,8 @@ if not logger.handlers:
     logger.addHandler(handler)
 
 # ── Constants ─────────────────────────────────────────────
-CHAT_MODEL = "gemini-2.5-pro"
+CHAT_MODEL = "llama-3.3-70b-versatile"
+
 MIN_TEXT_LENGTH = 50
 MIN_QUESTION_LENGTH = 3
 

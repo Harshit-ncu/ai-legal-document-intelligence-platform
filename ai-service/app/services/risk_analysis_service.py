@@ -29,7 +29,8 @@ if not logger.handlers:
     logger.addHandler(handler)
 
 # ── Constants ─────────────────────────────────────────────
-RISK_MODEL = "gemini-2.5-pro"
+RISK_MODEL = "llama-3.3-70b-versatile"
+
 MIN_TEXT_LENGTH = 50
 
 

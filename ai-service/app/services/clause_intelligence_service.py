@@ -29,7 +29,8 @@ if not logger.handlers:
     logger.addHandler(handler)
 
 # ── Constants ─────────────────────────────────────────────
-CLAUSE_MODEL = "gemini-2.5-pro"
+CLAUSE_MODEL = "llama-3.3-70b-versatile"
+
 MIN_TEXT_LENGTH = 10
 
 
