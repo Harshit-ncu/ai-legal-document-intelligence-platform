@@ -30,8 +30,11 @@ export const MAX_SIZE_BYTES = 5 * 1024 * 1024;
 export const validateFile = (file) => {
   if (!file) return 'Please select a file.';
 
-  // Check file type by MIME type
-  if (!ALLOWED_TYPES.includes(file.type)) {
+  // Some browsers/OS don't set the MIME type correctly for DOCX files.
+  // We check both the MIME type and the file extension.
+  const ext = '.' + getFileExtension(file.name).toLowerCase();
+  
+  if (!ALLOWED_TYPES.includes(file.type) && !ALLOWED_EXTENSIONS.includes(ext)) {
     return 'Only PDF, DOCX, TXT, and Image files are allowed.';
   }
 

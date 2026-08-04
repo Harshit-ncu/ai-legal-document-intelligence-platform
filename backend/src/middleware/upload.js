@@ -53,12 +53,17 @@ const fileFilter = (_req, file, cb) => {
     'application/pdf',
     // .docx MIME type (the official IANA type for Word 2007+)
     'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+    // Fallback for .doc and sometimes wrongly used for .docx
+    'application/msword',
     'text/plain',
     'image/jpeg',
     'image/png'
   ];
 
-  if (ALLOWED_MIME_TYPES.includes(file.mimetype)) {
+  const ext = path.extname(file.originalname).toLowerCase();
+  const ALLOWED_EXTENSIONS = ['.pdf', '.docx', '.txt', '.jpg', '.jpeg', '.png'];
+
+  if (ALLOWED_MIME_TYPES.includes(file.mimetype) || ALLOWED_EXTENSIONS.includes(ext)) {
     cb(null, true); // Accept the file
   } else {
     // Passing an Error as the first argument rejects the file
